@@ -1,0 +1,37 @@
+---
+title: Analysing spatial data using R
+---
+
+```{r}
+#| label: setup
+library(tidyverse)
+library(bruneimap)
+theme_set(theme_bw())
+```
+
+# Preliminaries
+
+- Brunei R User Group
+
+# Introduction
+
+- Why spatial analysis?
+- What is spatial data? Points, lines, polygons.
+- How can R help?
+
+# Getting started with R
+
+- RStudio overview
+- Importing data
+- Installing packages
+- The tidyverse
+- The [`{bruneimap}`](https://github.com/propertypricebn/bruneimap) package
+
+```{r}
+ggplot(kpg_sf) +
+  geom_sf(aes(fill = mukim), col = "gray50") +
+  geom_sf(data = mkm_sf, col = "black", lwd = 0.5, fill = NA) +
+  geom_sf(data = filter(kpg_sf, is.na(mukim)), fill = "gray70", col = "gray70") +
+  scale_fill_viridis_d(option = "turbo") +
+  theme(legend.position = "none") 
+```

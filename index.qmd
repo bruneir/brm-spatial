@@ -412,11 +412,154 @@ Garbage In Garbage Out! Modelling is as much an art as it is a science. Careful 
 
 <!-- ``` -->
 
-## Line data (polylines)
+## Line data (`(MULTI)LINESTRING`)
 
-For this example
+For this example, we'll play with the road network shape file obtained from OpenStreetMaps.
+The data is in geojson format, so let's import that into R.
 
-## Areal data (polygons)
+```{r}
+brd <- 
+  read_sf("data/hotosm_brn_roads_lines_geojson/hotosm_brn_roads_lines_geojson.geojson") |>
+  sf::st_transform(4326)  # SET THE CRS!!! (WGS84)
+glimpse(brd)
+```
+
+There are 25,570 features in this data set, which may be a bit too much.
+Let's try to focus on the major roads only.
+This information seems to be contained in the `highway` column.
+What's in it?
+
+```{r}
+table(brd$highway)
+```
+
+According to this [wiki](https://wiki.openstreetmap.org/wiki/OpenStreetMap_Carto/Lines), In OpenStreetMap, the major roads of a road network are sorted on an importance scale, from motorway to quaternary road.
+
+![](osm_roads.png)
+
+```{r}
+brd_mjr <- 
+  brd |>
+  filter(highway %in% c("motorway", "trunk", "primary", "secondary")) 
+brd_mjr
+```
+
+And now a plot of these roads.
+
+```{r}
+ggplot() +
+  geom_sf(data = brn_sf) +
+  geom_sf(data = brd_mjr, aes(col = highway), size = 0.5) +
+  # scale_colour_viridis_d(option = "turbo")
+  ggsci::scale_colour_npg()
+```
+
+With this, I asked ChatGPT what kind of spatial analyses can be done on this data set. 
+It said, when paired with appropriate data, we can do things like:
+
+1. **Network Connectivity Analysis**
+   - Assess reachability and identify disconnected road network components.
+
+2. **Accessibility and Service Area Analysis**
+   - Determine service areas and catchment areas for essential services.
+
+3. **Traffic Simulation and Management**
+   - Simulate traffic flow to identify bottlenecks and suggest optimal routing.
+
+4. **Environmental Impact Assessment**
+   - Estimate vehicular emissions and model noise pollution from roads.
+
+5. **Urban and Regional Planning**
+   - Examine land use compatibility and assess infrastructure development needs.
+
+6. **Safety Analysis**
+   - Identify accident hotspots and assess pedestrian safety.
+
+7. **Economic Analysis**
+   - Evaluate economic accessibility and the impact of road projects.
+
+Let's pick one of these: Calculate the distance between the centroid of several regions and the major hospital in the Belait district. 
+This analysis guides urban and healthcare planning by pinpointing areas with inadequate access to emergency services, enabling targeted infrastructure and service improvements. 
+
+### Road networks in Belait region
+
+First we "crop" the road network to the Belait region.
+
+```{r}
+brd_belait <- 
+  brd |>
+  st_intersection(filter(dis_sf, name == "Belait"))
+
+ggplot(brd_belait) +
+  geom_sf() +
+  geom_sf(data = filter(dis_sf, name == "Belait"), fill = NA)
+```
+
+If we were to sample random points from the Belait polygon, we might get non-sensical areas like the extremely rural areas or forest reserves.
+So the idea is to sample random points from the road network itself.
+For this, we need a function that will get us a random point on the path itself.
+
+```{r}
+get_random_point <- function(linestring) {
+  coords <- st_coordinates(linestring)
+  samp_coord <- coords[sample(nrow(coords), 1), , drop = FALSE]
+  samp_coord[, 1:3]
+}
+get_random_point(brd_belait$geometry[1])
+```
+
+Once we have this function, we need to `map()` this function onto each of the linestrings in the `brd_belait` data set.
+The resulting list of points is too large! 
+So we will just sample 100 points (you can experiment with this number).
+ 
+```{r}
+random_points <-
+  map(brd_belait$geometry, get_random_point) |>
+  bind_rows() |>
+  slice_sample(n = 100)
+```
+
+What we have now is a data frame of 100 random points on the road network in the Belait district.
+We will use the `{osrm}` package to calculate the distance between these points and the Suri Seri Begawan Hospital in Kuala Belait.
+The output will be three things: 1) The duration (minutes); 2) The distance (km); and 3) a `LINESTRING` object that represents the path to get to the hospital.
+Unfortunately the `osrmRoute()` function is not vectorised, i.e. we have to do it one-by-one for each of the 100 points.
+Luckily, we can just make a `for` loop and store the results in a list.
+
+```{r}
+library(osrm)
+suriseri <- c(114.198778, 4.583444)
+
+res <- list()
+for (i in 1:100) {
+  res[[i]] <- osrmRoute(src = random_points[i, 1:2], dst = suriseri, overview = "full")
+}
+res <- 
+  bind_rows(res) |>
+  as_tibble() |>
+  st_as_sf()
+res
+```
+
+So with all that done, we can now plot the paths taken by the 100 random points to the hospital. 
+The map gives us an indication of which areas are underserved by the hospital, and can guide urban and healthcare planning by pinpointing areas with inadequate access to emergency services, enabling targeted infrastructure and service improvements.
+
+```{r}
+ggplot(res) +
+  # geom_point(data = random_points, aes(x = X, y = Y), col = "red") +
+  geom_sf(data = filter(kpg_sf, district == "Belait"), fill = NA) +
+  geom_sf(aes(col = duration), linewidth = 1.2, alpha = 0.7) +
+  geom_point(x = suriseri[1], y = suriseri[2], col = "red3", pch = "X", 
+             size = 3) +
+  scale_colour_viridis_c() 
+```
+
+Improving the analysis
+
+- Weight analysis by populous areas. Outcalls to hospitals can be modelled using a Poisson distribution with the population as the rate parameter.
+- Use a more sophisticated routing algorithm that accounts for traffic conditions and road quality (am vs pm, weekends vs weekdays, etc.).
+- Simpler to analyse at the kampong or mukim level? 
+
+## Areal data (`(MULTI)POLYGONS`)
 
 ::: {.callout-tip title="What we'll learn"}
 -   Represent statistical data using colour mapping symbology (choropleth)

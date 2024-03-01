@@ -17,11 +17,12 @@ author:
 library(tidyverse)
 library(bruneimap)
 theme_set(theme_bw())
+library(ggrepel)
 ```
 
-## `https://bruneir.github.io/brm-spatial` {.unlisted}
+### `https://bruneir.github.io/brm-spatial` {.unlisted}
 
-# Preliminaries
+## Preliminaries
 
 Welcome to the first Brunei R User Group meetup!
 
@@ -60,22 +61,22 @@ More events to come this year. Stay tuned!
 -   A basic understanding of R is assumed.
 :::
 
-## Getting started with R
+### Getting started with R
 
 -   RStudio overview
 -   Importing data
 -   Installing packages
 
-## Some packages
+### Some packages
 
 -   The tidyverse
 -   The [`{bruneimap}`](https://github.com/propertypricebn/bruneimap) package
 
-# Introduction
+## Introduction
 
 Motivation...
 
-## Types of GIS data
+### Types of GIS data
 
 Roughly speaking, there are 4 types of GIS data.
 
@@ -119,13 +120,13 @@ Spatial data analysis must have these two components:
 1.  The study variables (in the above example, this is population data).
 2.  GIS data regarding that study variable.
 
-If you only have 1 without 2, then it really is just a regular data analysis (stating the obvious). Adding the GIS data is a process called "geocoding" your data points.
+If we only have 1 without 2, then it really is just a regular data analysis (stating the obvious). Adding the GIS data is a process called "geocoding" the data points.
 
 ::: callout-note
 In R, geocoding using `{tidyverse}` can be achieved using the `dplyr::left_join()` or similar `xxx_join()` family of functions.
 :::
 
-# Point data
+## Point data
 
 Using the data from @jaafar2023data . There are three datasets provided.
 
@@ -136,7 +137,7 @@ Using the data from @jaafar2023data . There are three datasets provided.
 We will first load the data sets in R.
 
 ```{r}
-# Load the data sets
+## Load the data sets
 soil_gps <- read_csv(
   "data/8389823/GPS - Revised.csv", 
   # IMPORTANT!!! The csv file has latin1 encoding as opposed to UTF-8
@@ -147,7 +148,7 @@ soil_physico <- read_csv("data/8389823/Soil physicochemical properties.csv")
 soil_texture <- read_csv("data/8389823/Soil texture classification.csv")
 ```
 
-## Clean up the point data
+### Clean up the point data
 
 Let's take a look at the point data set.
 
@@ -190,16 +191,210 @@ soil_gps <-
 soil_gps
 ```
 
-## Preliminary plot of the data
+### Preliminary plot of the data
+
+Using the data contained in the `{bruneimap}` package, we can plot the study areas on a map of Brunei.
+Use either the `brn_sf`, `dis_sf`, `mkm_sf` or `kpg_sf` data sets.
 
 ```{r}
-mkm_sf |>
-  ggplot() +
+ggplot(brn_sf) +
   geom_sf() +
   geom_point(data = soil_gps, aes(Longitude, Latitude)) 
 ```
 
-## Merge with the study data
+We can zoom in a bit... but we have to find out manually the correct bounding box.
+
+```{r}
+ggplot(mkm_sf) +
+  geom_sf() +
+  geom_sf(data = dis_sf, fill = NA, col = "black", linewidth = 1) +
+  geom_point(data = soil_gps, aes(Longitude, Latitude)) +
+  geom_text_repel(
+    data = soil_gps,
+    aes(Longitude, Latitude, label = Plot_name),
+    box.padding = 0.5,
+    max.overlaps = 30
+  ) +
+  coord_sf(
+    xlim = c(114.4, 114.6),
+    ylim = c(4.5, 4.7)
+  )
+```
+
+
+### Merge with the study data
+
+Let's take a look at the data set.
+
+```{r}
+#| code-fold: false
+glimpse(soil_physico)
+glimpse(soil_texture)
+```
+
+The `soil_physico` and `soil_texture` data sets contain the same columns, so we might as well merge them together. 
+We will use the `dplyr::left_join()` function.
+
+```{r}
+# Actually I just want to merge these two together
+soil_df <- left_join(
+  soil_physico,
+  soil_texture,
+  by = join_by(Habitat_type, Plot_name, Subplot_name, Soil_depth)
+)
+soil_df
+```
+
+Once we've done that, the `soil_df` data set (the study variables) is actually missing the spatial data. 
+We need to geocode it with the `soil_gps` data set.
+Again, `dplyr::left_join()` to the rescue!
+
+```{r}
+soil_df <- left_join(
+  soil_df, 
+  soil_gps,
+  by = join_by(Habitat_type, Plot_name)
+)
+```
+
+Now we're in a position to plot the study variables on the map.
+Note that there are only 18 plots in the `soil_gps` data set, and each plot has repeated measurements. 
+That means when we plot it, it will overlap and look like a single point. 
+So a good thing to do is to jitter the point so it's easier to see.
+
+```{r}
+ggplot(kpg_sf) +
+  geom_sf(fill = NA) +
+  geom_jitter(
+    data = soil_df, 
+    aes(Longitude, Latitude, col = Nitrogen, size = Nitrogen, 
+        shape = Habitat_type),
+    width = 0.001, height = 0.001, alpha = 0.7
+  ) +
+  coord_sf(
+    xlim = c(114.46, 114.54),
+    ylim = c(4.58, 4.64)
+  ) +
+  scale_color_viridis_c() +
+  guides(size = "none")
+```
+
+### Predictive models
+
+At this stage, we probably want to consult an expert in this field, and ask what variables are important for predicting the nitrogen content in the soil, so that we can build a *predictive model*.
+In mathematics, a model is simply a relationship between variables, like so:
+$$
+y = f(x_1,x_2,\dots,x_p) + \epsilon
+$$
+where the $x_1,\dots,x_p$ are the input variables, and $y$ is the output variable of interest (in this case, nitrogen concentrations).
+No model can perfectly account for this relationship, so we add a term $\epsilon$ which represents the error in the model.
+Ideally this should be as small as possible.
+
+Several models, ranging from classical statistical models to complex machine learning models, are possible:
+
+1. Linear regression model -- `lm()`
+2. Generalised additive models (GAM) [@wood2017generalized] -- `mgcv::gam()`
+3. Gaussian process regression (Kriging) -- `kernlab::gausspr()`
+4. Random forests -- `randomForest::randomForest()`
+5. Geographically weighted regression (GWR) -- `spgwr::gwr()`
+
+Let's focus on Gaussian process regression (because that's one that I know quite well).
+The idea of GPR is to model the relationship between the input variables and the output variable as a multivariate Gaussian distribution:
+$$
+f(x) \sim \operatorname{N}\big(0, K(x,x')\big)
+$$
+where $K(x,x')$ is the covariance function, which measures the similarity between the input variables $x$ and $x'$.
+The most common covariance function is the squared exponential function:
+$$
+K(x,x') = \exp\left(-\frac{1}{2}\sum_{i=1}^p (x_i - x'_i)^2\right).
+$$
+Let $d$ represent the "distance" between two points. 
+Then the squared exponential kernel becomes very small when this distance $d$ is large, and very large when $d$ is small.
+Put another way, since elements of the matrix $K$ represent co-variability, that means two points that are close together will behave similarly, and vice versa.
+This is very much in line with Tobler's first law of geography: "Everything is related to everything else, but near things are more related than distant things".
+
+```{r}
+x <- seq(-4, 4, length = 100)
+y <- exp(-x^2)
+tibble(d = x, Kxx = y) |>
+  ggplot(aes(d, Kxx)) +
+  geom_line() 
+```
+
+Given the assumed behaviour of our function $f(x)$, and what is observed from the data, we can then make predictions about the nitrogen content at unobserved locations.
+Skipping over a whole lot of mathematics, let's just fit this model in R.
+
+```{r}
+library(kernlab)
+
+# Build a model to predict Nitrogen from all numeric variables. This is
+# definitely not theory based, so just want to show the code.
+soil_df <-
+  soil_df |>
+  select(where(is.numeric)) 
+mod <- gausspr(Nitrogen ~ ., data = soil_df)
+mod
+```
+
+Having done that, we now want to prepare a prediction data frame.
+Essentially, we will rasterise the study area into a predefined grid.
+For the other variables, we will just set them at their mean values.
+
+```{r}
+xr <- c(114.4, 114.6)
+xx <- seq(xr[1] - 0.01, xr[2] + 0.01, length = 100)
+
+yr <- c(4.5, 4.7)
+yy <- seq(yr[1] - 0.01, yr[2] + 0.01, length = 100)
+
+mean_X <- 
+  soil_df |>
+  summarise(across(everything(), mean)) |>
+  select(-Longitude, -Latitude)
+
+pred_df <-
+  expand_grid(
+    Longitude = xx,
+    Latitude = yy
+  ) |>
+  bind_cols(mean_X)
+
+pred_df$ypred <- predict(mod, newdata = pred_df)
+
+# Additional step: filter points that are outside of the Brunei land area.
+pred_sf <- 
+  pred_df |>
+  st_as_sf(coords = c("Longitude", "Latitude"), crs = 4326) |>
+  st_filter(y = brn_sf[1, ])
+
+ggplot() +
+  geom_raster(
+    data = pred_sf,
+    aes(fill = ypred, geometry = geometry),
+    stat = "sf_coordinates",
+    alpha = 0.8
+  ) +
+  # geom_raster(data = pred_df, aes(Longitude, Latitude, fill = ypred),
+  #             alpha = 0.8) +
+  geom_sf(data = kpg_sf, fill = NA, inherit.aes = FALSE, col = "black") +
+  geom_sf(data = dis_sf, fill = NA, col = "black", linewidth = 1) +
+  geom_point(data = soil_gps, aes(Longitude, Latitude, 
+                                  shape = Habitat_type)) +
+  geom_text_repel(
+    data = soil_gps,
+    aes(Longitude, Latitude, label = Plot_name),
+    box.padding = 0.5,
+    max.overlaps = 30
+  ) +
+  scale_fill_viridis_c() +
+  scale_colour_viridis_c() +
+  coord_sf(xlim = xr, ylim = yr)
+```
+
+::: {.callout-warning}
+Garbage In Garbage Out! Modelling is as much an art as it is a science. Careful consideration needs to be made as to what is considered a predictor of a variable.
+:::
+
 
 <!-- ```{r} -->
 
@@ -217,7 +412,11 @@ mkm_sf |>
 
 <!-- ``` -->
 
-# Brunei population
+## Line data (polylines)
+
+For this example
+
+## Areal data (polygons)
 
 ::: {.callout-tip title="What we'll learn"}
 -   Represent statistical data using colour mapping symbology (choropleth)

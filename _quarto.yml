@@ -32,3 +32,5 @@ knitr:
   opts_chunk:
     fig.align: center
     out-width: 100%
+ 
+bibliography: ref.bib

@@ -6,8 +6,9 @@ author:
   - name: Haziq Jamil
     orcid: 0000-0003-3298-1010
     email: haziq.jamil@ubd.edu.bn
-    affiliations:
-      - name: Universiti Brunei Darussalam
+    url: https://haziqj.ml
+    affiliation: Universiti Brunei Darussalam
+    degrees: PhD
 # website:
 #   repo-url: https://github.com/bruneir/br-spatial
 ---
@@ -20,44 +21,108 @@ library(bruneimap)
 theme_set(theme_bw())
 ```
 
+## `https://bruneir.github.io/brm-spatial` {.unlisted}
+
 # Preliminaries
 
-- Brunei R User Group
+Welcome to the first Brunei R User Group meetup!
+
+::: {layout="[ 65, 35 ]"}
+::: {#first-column}
+<br>
+
+> The RUGS mission is to facilitate the person-to-person exchange of knowledge in small group settings on a global scale. ---R Consortium
+:::
+
+::: {#second-column}
+![](https://bruneir.github.io/bruneiR-Rlogo.jpg)
+
+``` r
+R |> b_unei()
+```
+:::
+:::
+
+<u>About us</u>
+
+-   A group of UBD-ians and R enthusiasts
+-   We want to create a community of R users in Brunei
+-   Champion the Open Source cause
+
+More events to come this year. Stay tuned!
+
+<!-- This is a hands-on workshop on spatial data analysis using R. We will be using the `bruneimap` package to visualise and analyse spatial data in Brunei Darussalam. -->
+
+::: {.callout-warning title="Outcomes"}
+-   This is a hands-on, live-coding, lecture-style workshop.
+-   Expect to learn...
+    1.  What spatial data is and why it's important.
+    2.  What statistical analysis can be done with spatial data.
+    3.  How to perform spatial analysis using R.
+-   A basic understanding of R is assumed.
+:::
+
+## Getting started with R
+
+-   RStudio overview
+-   Importing data
+-   Installing packages
+
+## Some packages
+
+-   The tidyverse
+-   The [`{bruneimap}`](https://github.com/propertypricebn/bruneimap) package
 
 # Introduction
 
-- Why spatial analysis?
-- What is spatial data? Points, lines, polygons.
-- How can R help?
+Motivation...
 
-# Getting started with R
+## Types of GIS data
 
-- RStudio overview
-- Importing data
-- Installing packages
-- The tidyverse
-- The [`{bruneimap}`](https://github.com/propertypricebn/bruneimap) package
+Roughly speaking, there are 4 types of GIS data.
 
-```{r}
-ggplot(kpg_sf) +
-  geom_sf(aes(fill = mukim), col = "gray50") +
-  geom_sf(data = mkm_sf, col = "black", lwd = 0.5, fill = NA) +
-  geom_sf(data = filter(kpg_sf, is.na(mukim)), fill = "gray70", col = "gray70") +
-  scale_fill_viridis_d(option = "turbo") +
-  theme(legend.position = "none") 
-```
+1.  **Points**
+    -   Having $(X, Y)$ coordinates (latitude, longitude, or projected coordinates, and are "zero-dimensional".
+    -   E.g. shopping malls, hospitals, outbreaks, etc.
+2.  **Lines**
+    -   A collection of points that form a path or a boundary. Has length.
+    -   E.g. roads, rivers, pipelines, etc.
+3.  **Polygons**
+    -   A closed area made up of line segments or curves.
+    -   E.g. countries, districts, buildings, etc.
+4.  **Raster**
+    -   Pixelated (or gridded) data where each pixel is associated with a geographical area and some measurement.
+    -   E.g. satellite images, elevation data, etc.
 
+The first three are usually referred to as *vector data*. GIS data can be stored in various formats such as `.shp` or `.geojson`. The handling of GIS data (at least vector type data) is facilitated by the `{sf}` package [@pebesma2023spatial] which uses the *simple features* standard.
+
+::: callout-note
+*Simple features* refers to a formal standard (ISO 19125-1:2004) that describes how objects in the real world can be represented in computers, with emphasis on the spatial geometry of these objects.
+:::
+
+<!-- ```{r} -->
+
+<!-- ggplot(kpg_sf) + -->
+
+<!--   geom_sf(aes(fill = mukim), col = "gray50") + -->
+
+<!--   geom_sf(data = mkm_sf, col = "black", lwd = 0.5, fill = NA) + -->
+
+<!--   geom_sf(data = filter(kpg_sf, is.na(mukim)), fill = "gray70", col = "gray70") + -->
+
+<!--   scale_fill_viridis_d(option = "turbo") + -->
+
+<!--   theme(legend.position = "none")  -->
+
+<!-- ``` -->
 
 # Brunei population
 
 ::: {.callout-tip title="What we'll learn"}
-
-- Represent statistical data using colour mapping symbology (choropleth)
-- Use `ggplot2::geom_label()` or `ggrepel::geom_label_repel()` to add labels to the map
-- Using a binned colour scale, e.g. `ggplot2::geom_scale_fill_viridis_b()` 
-
+-   Represent statistical data using colour mapping symbology (choropleth)
+-   Use `ggplot2::geom_label()` or `ggrepel::geom_label_repel()` to add labels to the map
+-   Using a binned colour scale, e.g. `ggplot2::geom_scale_fill_viridis_b()`
 :::
-
 
 ```{r}
 bn_pop_sf <- 
@@ -95,4 +160,3 @@ bn_pop_sf |>
   ) +
   theme_bw()
 ```
-

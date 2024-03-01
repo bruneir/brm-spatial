@@ -9,8 +9,6 @@ author:
     url: https://haziqj.ml
     affiliation: Universiti Brunei Darussalam
     degrees: PhD
-# website:
-#   repo-url: https://github.com/bruneir/br-spatial
 ---
 
 ```{r}
@@ -99,6 +97,109 @@ The first three are usually referred to as *vector data*. GIS data can be stored
 ::: callout-note
 *Simple features* refers to a formal standard (ISO 19125-1:2004) that describes how objects in the real world can be represented in computers, with emphasis on the spatial geometry of these objects.
 :::
+
+It's helpful to think about the shape of this spatial data set. As an example, here's a random slice of 10 kampong-level population data for Brunei:
+
+```{r}
+left_join(
+  kpg_sf, 
+  bn_census2021, 
+  by = join_by(id, kampong, mukim, district)
+) |>
+  select(
+    kampong, population, geometry
+  ) |>
+  slice_sample(n = 10)
+  
+
+```
+
+Spatial data analysis must have these two components:
+
+1.  The study variables (in the above example, this is population data).
+2.  GIS data regarding that study variable.
+
+If you only have 1 without 2, then it really is just a regular data analysis (stating the obvious). Adding the GIS data is a process called "geocoding" your data points.
+
+::: callout-note
+In R, geocoding using `{tidyverse}` can be achieved using the `dplyr::left_join()` or similar `xxx_join()` family of functions.
+:::
+
+# Point data
+
+Using the data from @jaafar2023data . There are three datasets provided.
+
+1.  GIS data ([WGS84](https://en.wikipedia.org/wiki/World_Geodetic_System "World Geodetic System") coordinates) of all study plots.
+2.  Soil physicochemical property data. This contains details of soil physical, chemical, nutrient concentration of the three habits studied.
+3.  Soil texture classification. Provides details on the classification of the soil texture in the habitats studied.
+
+We will first load the data sets in R.
+
+```{r}
+# Load the data sets
+soil_gps <- read_csv(
+  "data/8389823/GPS - Revised.csv", 
+  # IMPORTANT!!! The csv file has latin1 encoding as opposed to UTF-8
+  locale = readr::locale(encoding = "latin1")
+)
+  
+soil_physico <- read_csv("data/8389823/Soil physicochemical properties.csv")
+soil_texture <- read_csv("data/8389823/Soil texture classification.csv")
+```
+
+## Clean up the point data
+
+Let's take a look at the point data set.
+
+```{r}
+#| code-fold: false
+glimpse(soil_gps)
+```
+
+The first three columns are essentially the identifiers of the plots (forest type, habitat type, and the unique identification code for the study plot). However, the latitude and longitude needs a bit of cleaning up, because it's currently in character format. This needs to be in a formal Degree Minute Second `DMS` class that R can understand. For this we will use the `sp::char2dms()` function.
+
+As an example let's take a look at the first latitude.
+
+```{r}
+#| code-fold: false
+x <- soil_gps$Latitude[1]
+x
+
+# convert it using sp::char2dms() function
+x <- sp::char2dms(x, chd = "°")
+x
+str(x)
+```
+
+This is a special class that R understands as being a latitude from Earth. To convert it to decimal, we just do `as.numeric()`:
+
+```{r}
+#| code-fold: false
+as.numeric(x)
+```
+
+Now let's do this for all the values in the `soil_gps` data. We will use the `dplyr::mutate()` function in a pipeline.
+
+```{r}
+soil_gps <-
+  soil_gps |>
+  mutate(
+    Latitude = as.numeric(sp::char2dms(Latitude, chd = "°")),
+    Longitude = as.numeric(sp::char2dms(Longitude, chd = "°"))
+  )
+soil_gps
+```
+
+## Preliminary plot of the data
+
+```{r}
+mkm_sf |>
+  ggplot() +
+  geom_sf() +
+  geom_point(data = soil_gps, aes(Longitude, Latitude)) 
+```
+
+## Merge with the study data
 
 <!-- ```{r} -->
 

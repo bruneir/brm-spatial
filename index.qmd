@@ -1,9 +1,20 @@
 ---
 title: Analysing spatial data using R
+subtitle: Brunei R User Group Meetup 🇧🇳
+date: '9 March 2023'
+author:
+  - name: Haziq Jamil
+    orcid: 0000-0003-3298-1010
+    email: haziq.jamil@ubd.edu.bn
+    affiliations:
+      - name: Universiti Brunei Darussalam
+# website:
+#   repo-url: https://github.com/bruneir/br-spatial
 ---
 
 ```{r}
 #| label: setup
+#| include: false
 library(tidyverse)
 library(bruneimap)
 theme_set(theme_bw())
@@ -35,3 +46,53 @@ ggplot(kpg_sf) +
   scale_fill_viridis_d(option = "turbo") +
   theme(legend.position = "none") 
 ```
+
+
+# Brunei population
+
+::: {.callout-tip title="What we'll learn"}
+
+- Represent statistical data using colour mapping symbology (choropleth)
+- Use `ggplot2::geom_label()` or `ggrepel::geom_label_repel()` to add labels to the map
+- Using a binned colour scale, e.g. `ggplot2::geom_scale_fill_viridis_b()` 
+
+:::
+
+
+```{r}
+bn_pop_sf <- 
+  left_join(
+    kpg_sf, 
+    bn_census2021, 
+    by = join_by(id, kampong, mukim, district
+  ))
+
+kpg_labels_sf <-
+  bn_pop_sf |>
+  arrange(desc(population)) |>
+  slice_head(n = 10)
+
+bn_pop_sf |>
+  # filter(population > 50) |>
+  ggplot() +
+  geom_sf(aes(fill = population), col = NA, alpha = 0.8) +
+  geom_sf(data = kpg_sf, fill = NA, col = "black") +
+  ggrepel::geom_label_repel(
+    data = kpg_labels_sf,
+    aes(label = kampong, geometry = geometry),
+    stat = "sf_coordinates",
+    inherit.aes = FALSE,
+    box.padding = 1,
+    size = 2,
+    max.overlaps = Inf
+  ) +
+  scale_fill_viridis_b(
+    name = "Population",
+    na.value = NA,
+    labels = scales::comma,
+    breaks = c(0, 50, 100, 1000, 5000, 10000, 15000)
+    # limits = c(0, 12000)
+  ) +
+  theme_bw()
+```
+

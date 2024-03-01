@@ -1,0 +1,17 @@
+{
+  "hash": "bc2518731ade4cbd4bb306f0f57e0e4e",
+  "result": {
+    "engine": "knitr",
+    "markdown": "---\ntitle: Analysing spatial data using R\nsubtitle: Brunei R User Group Meetup 🇧🇳\ndate: '9 March 2023'\nauthor:\n  - name: Haziq Jamil\n    orcid: 0000-0003-3298-1010\n    email: haziq.jamil@ubd.edu.bn\n    affiliations:\n      - name: Universiti Brunei Darussalam\n# website:\n#   repo-url: https://github.com/bruneir/br-spatial\n---\n\n\n\n\n# Preliminaries\n\n- Brunei R User Group\n\n# Introduction\n\n- Why spatial analysis?\n- What is spatial data? Points, lines, polygons.\n- How can R help?\n\n# Getting started with R\n\n- RStudio overview\n- Importing data\n- Installing packages\n- The tidyverse\n- The [`{bruneimap}`](https://github.com/propertypricebn/bruneimap) package\n\n\n::: {.cell layout-align=\"center\"}\n\n```{.r .cell-code}\nggplot(kpg_sf) +\n  geom_sf(aes(fill = mukim), col = \"gray50\") +\n  geom_sf(data = mkm_sf, col = \"black\", lwd = 0.5, fill = NA) +\n  geom_sf(data = filter(kpg_sf, is.na(mukim)), fill = \"gray70\", col = \"gray70\") +\n  scale_fill_viridis_d(option = \"turbo\") +\n  theme(legend.position = \"none\") \n```\n\n::: {.cell-output-display}\n![](index_files/figure-html/unnamed-chunk-2-1.png){fig-align='center' width=100%}\n:::\n:::\n\n\n\n# Brunei population\n\n::: {.callout-tip title=\"What we'll learn\"}\n\n- Represent statistical data using colour mapping symbology (choropleth)\n- Use `ggplot2::geom_label()` or `ggrepel::geom_label_repel()` to add labels to the map\n- Using a binned colour scale, e.g. `ggplot2::geom_scale_fill_viridis_b()` \n\n:::\n\n\n\n::: {.cell layout-align=\"center\"}\n\n```{.r .cell-code}\nbn_pop_sf <- \n  left_join(\n    kpg_sf, \n    bn_census2021, \n    by = join_by(id, kampong, mukim, district\n  ))\n\nkpg_labels_sf <-\n  bn_pop_sf |>\n  arrange(desc(population)) |>\n  slice_head(n = 10)\n\nbn_pop_sf |>\n  # filter(population > 50) |>\n  ggplot() +\n  geom_sf(aes(fill = population), col = NA, alpha = 0.8) +\n  geom_sf(data = kpg_sf, fill = NA, col = \"black\") +\n  ggrepel::geom_label_repel(\n    data = kpg_labels_sf,\n    aes(label = kampong, geometry = geometry),\n    stat = \"sf_coordinates\",\n    inherit.aes = FALSE,\n    box.padding = 1,\n    size = 2,\n    max.overlaps = Inf\n  ) +\n  scale_fill_viridis_b(\n    name = \"Population\",\n    na.value = NA,\n    labels = scales::comma,\n    breaks = c(0, 50, 100, 1000, 5000, 10000, 15000)\n    # limits = c(0, 12000)\n  ) +\n  theme_bw()\n```\n\n::: {.cell-output-display}\n![](index_files/figure-html/unnamed-chunk-3-1.png){fig-align='center' width=100%}\n:::\n:::\n",
+    "supporting": [
+      "index_files"
+    ],
+    "filters": [
+      "rmarkdown/pagebreak.lua"
+    ],
+    "includes": {},
+    "engineDependencies": {},
+    "preserve": {},
+    "postProcess": true
+  }
+}

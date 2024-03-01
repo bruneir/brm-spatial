@@ -54,7 +54,7 @@ More events to come this year. Stay tuned!
 
 ::: {.callout-warning title="Outcomes"}
 -   This is a hands-on, live-coding, lecture-style workshop.
--   Expect to learn...
+-   Expect to learn (or at the very least, see me do!)...
     1.  What spatial data is and why it's important.
     2.  What statistical analysis can be done with spatial data.
     3.  How to perform spatial analysis using R.
@@ -64,10 +64,11 @@ More events to come this year. Stay tuned!
 ### Getting started with R
 
 -   RStudio overview
--   Importing data
--   Installing packages
+-   Entering commands
 
-### Some packages
+### List of packages
+
+Install these packages
 
 -   The tidyverse
 -   The [`{bruneimap}`](https://github.com/propertypricebn/bruneimap) package
@@ -126,9 +127,10 @@ If we only have 1 without 2, then it really is just a regular data analysis (sta
 In R, geocoding using `{tidyverse}` can be achieved using the `dplyr::left_join()` or similar `xxx_join()` family of functions.
 :::
 
-## Point data
+## `(MULTI)POINT` data
 
-Using the data from @jaafar2023data . There are three datasets provided.
+Using the data from @jaafar2023data on the physicochemical characteristics and texture classification of soil in Bornean tropical heath forests affected by exotic Acacia mangium.
+There are three datasets provided.
 
 1.  GIS data ([WGS84](https://en.wikipedia.org/wiki/World_Geodetic_System "World Geodetic System") coordinates) of all study plots.
 2.  Soil physicochemical property data. This contains details of soil physical, chemical, nutrient concentration of the three habits studied.

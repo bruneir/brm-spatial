@@ -12,6 +12,7 @@ code-links:
 
 format: 
   html:
+    page-layout: full
     code-fold: true
     code-tools: true
     code-link: true

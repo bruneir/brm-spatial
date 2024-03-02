@@ -11,15 +11,6 @@ author:
     degrees: PhD
 ---
 
-```{r}
-#| label: setup
-#| include: false
-library(tidyverse)
-library(bruneimap)
-theme_set(theme_bw())
-library(ggrepel)
-```
-
 ### `https://bruneir.github.io/brm-spatial` {.unlisted}
 
 ## Preliminaries
@@ -66,19 +57,93 @@ More events to come this year. Stay tuned!
 
 For some, maybe it will be a bit fast-paced (sorry in advanced!). 
 All the materials will be available online (see link on the right).
+
 I'm very happy to answer questions afterwards!
+
+### Clone this repo from GitHub
+
+You can access all the source files from GitHub.
+Click on the link at the right labelled 'GitHub Repo'. 
+If you already have a GitHub account, you can go ahead and clone this to your local computer.
+If not, you can download the files as a zip, and unzip them at a location of your choice.
+
+![](download_github.png)
 
 ### Getting started with R
 
--   RStudio overview
--   Entering commands
+I'll just talk about these points briefly:
+
+- What's the difference between R and RStudio?
+- Quick run through RStudio's features
+- Set up a project
+- R Scripts vs Notebooks (`.qmd` or `.Rmd`)
+- Executing commands in R
+
+```{r}
+#| code-fold: false
+# Try this out for yourself!
+
+N <- 100
+x <- runif(n = N, min = 0, max = 1)
+head(x)  # Show the first 6 elements
+mean(x)  # Calculate the mean of this vector
+run_x <- rep(NA, length(x))
+for (i in seq_along(x)) {
+  run_x[i] <- sum(x[1:i])
+}
+head(run_x)
+```
 
 ### List of packages
 
-Install these packages
+The power of R comes from its diverse range of user-contributed packages.
+To install a package in R, we type `install.packages("package_name")`.
+As an example, try install the `{tidyverse}` package.
 
--   The tidyverse
--   The [`{bruneimap}`](https://github.com/propertypricebn/bruneimap) package
+```{r}
+#| code-fold: false
+#| eval: false
+install.packages("tidyverse")
+```
+
+A bunch of things will happen on your screen that makes you look like a legit hacker.
+(It's normal! Unles... there are some errors in the installation process 😅)
+Once that's done, you will want to load the package to start using it.
+
+```{r}
+#| code-fold: false
+library(tidyverse)  # no need to use quotes
+```
+
+Here's a list of packages we will be using today. 
+You'll need to install all of them before we begin. 
+In RStudio, there will be a prompt (yellow line at the top of the source pane) for you to install all these packages with a single click.
+
+```{r}
+#| label: setup
+#| include: false
+library(tidyverse)
+theme_set(theme_bw())  # set the theme
+library(kernlab)       # for GPR
+library(ggrepel)       # nice labels in plots
+library(osrm)          # OSM route calculator
+```
+
+Furthermore, there are packages that are not yet on CRAN, but are available on GitHub. 
+Please install them using the `remotes` package.
+
+```{r}
+#| code-fold: false
+#| eval: false
+remotes::install_github("propertypricebn/bruneimap")
+```
+
+Of course, don't forget to load it.
+For more information, please check out the package's [GitHub page](https://github.com/propertypricebn/bruneimap)
+
+```{r}
+library(bruneimap)
+```
 
 ## Introduction
 
@@ -334,8 +399,6 @@ Given the assumed behaviour of our function $f(x)$, and what is observed from th
 Skipping over a whole lot of mathematics, let's just fit this model in R.
 
 ```{r}
-library(kernlab)
-
 # Build a model to predict Nitrogen from all numeric variables. This is
 # definitely not theory based, so just want to show the code.
 soil_df <-
@@ -535,7 +598,6 @@ Unfortunately the `osrmRoute()` function is not vectorised, i.e. we have to do i
 Luckily, we can just make a `for` loop and store the results in a list.
 
 ```{r}
-library(osrm)
 suriseri <- c(114.198778, 4.583444)
 
 res <- list()

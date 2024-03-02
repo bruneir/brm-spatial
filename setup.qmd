@@ -1,0 +1,22 @@
+---
+title: Analysing spatial data using R
+subtitle: Brunei R User Group Meetup 🇧🇳
+date: '9 March 2023'
+author:
+  - name: Haziq Jamil
+    orcid: 0000-0003-3298-1010
+    email: haziq.jamil@ubd.edu.bn
+    url: https://haziqj.ml
+    affiliation: Universiti Brunei Darussalam
+    degrees: PhD
+---
+
+# Setup instructions
+
+Prior to attending the event, please ensure you have done the following.
+
+1. Install R **and** RStudio from  https://posit.co/download/rstudio-desktop/. 
+   
+   ![](install_r.png)
+   
+   Note: These are two different things, so please ensure you have installed both of them. Go to

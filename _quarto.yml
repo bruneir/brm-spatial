@@ -27,7 +27,7 @@ fontsize: 120%
 execute:
   freeze: auto
   warning: false
-  cache: true
+  cache: false
 
 knitr: 
   opts_chunk:

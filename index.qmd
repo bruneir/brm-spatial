@@ -45,7 +45,7 @@ More events to come this year. Stay tuned!
 ### Expectations
 
 ::: {.callout-warning title="Outcomes"}
--   This is a hands-on, live-coding, lecture-style workshop.
+-   This is a hands-on, live-coding, lecture-style "workshop".
 -   Expect to learn (or at the very least, see me do!)...
     1.  What spatial data is and why it's important.
     2.  What statistical analysis can be done with spatial data.

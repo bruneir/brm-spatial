@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 <meta name="author" content="Haziq Jamil">
-<meta name="dcterms.date" content="2023-03-09">
+<meta name="dcterms.date" content="2024-03-09">
 
 <title>Analysing spatial data using R</title>
 <style>
@@ -225,7 +225,7 @@ window.Quarto = {
     <div>
     <div class="quarto-title-meta-heading">Published</div>
     <div class="quarto-title-meta-contents">
-      <p class="date">March 9, 2023</p>
+      <p class="date">March 9, 2024</p>
     </div>
   </div>
   
@@ -318,11 +318,11 @@ Outcomes
 <span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>x <span class="ot">&lt;-</span> <span class="fu">runif</span>(<span class="at">n =</span> N, <span class="at">min =</span> <span class="dv">0</span>, <span class="at">max =</span> <span class="dv">1</span>)</span>
 <span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(x)  <span class="co"># Show the first 6 elements</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>[1] 0.8304699 0.5659743 0.7684357 0.7287764 0.1446043 0.4890953</code></pre>
+<pre><code>[1] 0.4974527 0.9538745 0.6624908 0.1469375 0.1052561 0.3865934</code></pre>
 </div>
 <div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu">mean</span>(x)  <span class="co"># Calculate the mean of this vector</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>[1] 0.4900089</code></pre>
+<pre><code>[1] 0.4868915</code></pre>
 </div>
 <div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>run_x <span class="ot">&lt;-</span> <span class="fu">rep</span>(<span class="cn">NA</span>, <span class="fu">length</span>(x))</span>
 <span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> (i <span class="cf">in</span> <span class="fu">seq_along</span>(x)) {</span>
@@ -330,7 +330,7 @@ Outcomes
 <span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>}</span>
 <span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(run_x)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>[1] 0.8304699 1.3964442 2.1648798 2.8936562 3.0382605 3.5273558</code></pre>
+<pre><code>[1] 0.4974527 1.4513272 2.1138180 2.2607555 2.3660116 2.7526051</code></pre>
 </div>
 </div>
 </section>
@@ -418,21 +418,21 @@ Note
 <pre><code>Simple feature collection with 10 features and 2 fields
 Geometry type: POLYGON
 Dimension:     XY
-Bounding box:  xmin: 114.2334 ymin: 4.299611 xmax: 115.1575 ymax: 5.044288
+Bounding box:  xmin: 114.437 ymin: 4.395845 xmax: 115.1035 ymax: 4.984582
 Geodetic CRS:  WGS 84
 # A tibble: 10 × 3
-   kampong                          population                          geometry
-   &lt;chr&gt;                                 &lt;dbl&gt;                     &lt;POLYGON [°]&gt;
- 1 Kg. Mata-Mata                          7159 ((114.9012 4.913718, 114.9013 4.…
- 2 Kg. Gatas                                47 ((114.4678 4.416534, 114.4679 4.…
- 3 STKRJ Mata-Mata Kawasan 3              2485 ((114.8728 4.906532, 114.8725 4.…
- 4 Perumahan Negara Rimba Kawasan 2       4151 ((114.9158 4.954169, 114.9151 4.…
- 5 Kg. Mendaram Kecil                       58 ((114.4898 4.339776, 114.4898 4.…
- 6 Kg. Kinalong                             12 ((115.071 4.69048, 115.0711 4.69…
- 7 Kg. Simbatang Batu Apoi                  NA ((115.1573 4.681658, 115.1573 4.…
- 8 Kg. Telisai                            1802 ((114.5669 4.727061, 114.5684 4.…
- 9 Kg. Mumong B                           3141 ((114.2598 4.579565, 114.2687 4.…
-10 Tanjong Pelumpong                        NA ((115.1004 5.040252, 115.1005 5.…</code></pre>
+   kampong                                 population                   geometry
+   &lt;chr&gt;                                        &lt;dbl&gt;              &lt;POLYGON [°]&gt;
+ 1 Kg. Tanjong Bungar                             129 ((115.0852 4.678481, 115.…
+ 2 Kg. Sungai Orok                               1071 ((114.9828 4.980276, 114.…
+ 3 Kg. Labi Lama                                    4 ((114.4552 4.407087, 114.…
+ 4 Kg. Pancha Delima                             1548 ((114.9433 4.943312, 114.…
+ 5 Pulau Sibungor                                  NA ((114.9557 4.866652, 114.…
+ 6 Kg. Kiudang                                   1016 ((114.7161 4.75229, 114.7…
+ 7 Perumahan Negara Lambak Kanan Kawasan 5       1719 ((114.9598 4.980803, 114.…
+ 8 Kg. Bakut Pengiran Siraja Muda B               110 ((114.942 4.882172, 114.9…
+ 9 STKRJ Tungku Kawasan 3                        2125 ((114.8837 4.927026, 114.…
+10 Kg. Keluyoh                                    186 ((114.5263 4.672105, 114.…</code></pre>
 </div>
 </div>
 <p>Spatial data analysis must have these two components:</p>
@@ -778,10 +778,10 @@ K(x,x') = \exp\left(-\frac{1}{2}\sum_{i=1}^p (x_i - x'_i)^2\right).
 Problem type: regression 
 
 Gaussian Radial Basis kernel function. 
- Hyperparameter : sigma =  0.073382350892738 
+ Hyperparameter : sigma =  0.0709236819079548 
 
 Number of training instances learned : 144 
-Train error : 0.108651374 </code></pre>
+Train error : 0.108907668 </code></pre>
 </div>
 </div>
 <p>Having done that, we now want to prepare a prediction data frame. Essentially, we will rasterise the study area into a predefined grid. For the other variables, we will just set them at their mean values.</p>
@@ -1071,21 +1071,21 @@ Geodetic CRS:  WGS 84
 <pre><code>Simple feature collection with 100 features and 4 fields
 Geometry type: LINESTRING
 Dimension:     XY
-Bounding box:  xmin: 114.1868 ymin: 4.39987 xmax: 114.5117 ymax: 4.68194
+Bounding box:  xmin: 114.1969 ymin: 4.34658 xmax: 114.7187 ymax: 4.68893
 Geodetic CRS:  WGS 84
 # A tibble: 100 × 5
    src   dst   duration distance                                        geometry
    &lt;chr&gt; &lt;chr&gt;    &lt;dbl&gt;    &lt;dbl&gt;                                &lt;LINESTRING [°]&gt;
- 1 1     dst       5.46     2.83 (114.2083 4.57302, 114.2083 4.57302, 114.2082 …
- 2 1     dst      13.4      9.07 (114.2733 4.59769, 114.2732 4.59766, 114.2732 …
- 3 1     dst       9.14     6.79 (114.2502 4.58966, 114.2501 4.59037, 114.25 4.…
- 4 1     dst      11.7      8.67 (114.2706 4.60023, 114.2707 4.60013, 114.2707 …
- 5 1     dst      29.6     34.2  (114.4356 4.65023, 114.4356 4.65023, 114.4364 …
- 6 1     dst      16.7     11.6  (114.2947 4.60751, 114.2948 4.60754, 114.2948 …
- 7 1     dst       4.15     2.66 (114.2177 4.59164, 114.2177 4.59164, 114.2177 …
- 8 1     dst      26.1     26.0  (114.3797 4.63288, 114.3797 4.63288, 114.3798 …
- 9 1     dst       7.43     4.87 (114.2376 4.59018, 114.2373 4.5901, 114.2371 4…
-10 1     dst      18.9     15.3  (114.3206 4.60654, 114.3206 4.60654, 114.3204 …
+ 1 1     dst      18.9     15.4  (114.3218 4.61523, 114.3218 4.6151, 114.322 4.…
+ 2 1     dst      30.2     34.6  (114.4362 4.64818, 114.4355 4.65019, 114.4355 …
+ 3 1     dst      32.3     37.0  (114.46 4.65505, 114.4605 4.65522, 114.4632 4.…
+ 4 1     dst      22.5     21.9  (114.3417 4.62216, 114.3417 4.62216, 114.3418 …
+ 5 1     dst      18.0     11.9  (114.2934 4.60903, 114.2934 4.60903, 114.2939 …
+ 6 1     dst       6.90     5.33 (114.2358 4.58244, 114.2355 4.58238, 114.2349 …
+ 7 1     dst      32.8     37.2  (114.4737 4.67463, 114.4749 4.67235, 114.4753 …
+ 8 1     dst     114.      95.0  (114.6808 4.34658, 114.6808 4.34658, 114.6819 …
+ 9 1     dst       6.04     4.30 (114.2308 4.59157, 114.2308 4.59157, 114.2309 …
+10 1     dst      17.5     19.0  (114.3281 4.6083, 114.3283 4.60783, 114.3283 4…
 # ℹ 90 more rows</code></pre>
 </div>
 </div>
@@ -1641,7 +1641,7 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
 <div class="sourceCode" id="cb58" data-shortcodes="false"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb58-1"><a href="#cb58-1" aria-hidden="true" tabindex="-1"></a><span class="co">---</span></span>
 <span id="cb58-2"><a href="#cb58-2" aria-hidden="true" tabindex="-1"></a><span class="an">title:</span><span class="co"> Analysing spatial data using R</span></span>
 <span id="cb58-3"><a href="#cb58-3" aria-hidden="true" tabindex="-1"></a><span class="an">subtitle:</span><span class="co"> Brunei R User Group Meetup 🇧🇳</span></span>
-<span id="cb58-4"><a href="#cb58-4" aria-hidden="true" tabindex="-1"></a><span class="an">date:</span><span class="co"> '9 March 2023'</span></span>
+<span id="cb58-4"><a href="#cb58-4" aria-hidden="true" tabindex="-1"></a><span class="an">date:</span><span class="co"> '9 March 2024'</span></span>
 <span id="cb58-5"><a href="#cb58-5" aria-hidden="true" tabindex="-1"></a><span class="an">author:</span></span>
 <span id="cb58-6"><a href="#cb58-6" aria-hidden="true" tabindex="-1"></a><span class="co">  - name: Haziq Jamil</span></span>
 <span id="cb58-7"><a href="#cb58-7" aria-hidden="true" tabindex="-1"></a><span class="co">    orcid: 0000-0003-3298-1010</span></span>
@@ -2317,7 +2317,7 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
 </code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div></div></div></div></div>
 </div> <!-- /content -->
-<script>var lightboxQuarto = GLightbox({"selector":".lightbox","loop":false,"descPosition":"bottom","closeEffect":"zoom","openEffect":"zoom"});
+<script>var lightboxQuarto = GLightbox({"openEffect":"zoom","selector":".lightbox","loop":false,"descPosition":"bottom","closeEffect":"zoom"});
 window.onload = () => {
   lightboxQuarto.on('slide_before_load', (data) => {
     const { slideIndex, slideNode, slideConfig, player, trigger } = data;

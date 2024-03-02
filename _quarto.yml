@@ -1,5 +1,6 @@
 project:
   # title: Analysing spatial data using R
+  type: website
   output-dir: _site
 
 other-links:
@@ -27,7 +28,7 @@ fontsize: 120%
 execute:
   freeze: auto
   warning: false
-  cache: false
+  cache: true
 
 knitr: 
   opts_chunk:

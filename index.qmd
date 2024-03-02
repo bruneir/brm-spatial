@@ -37,7 +37,8 @@ Welcome to the first Brunei R User Group meetup!
 ![](https://bruneir.github.io/bruneiR-Rlogo.jpg)
 
 ``` r
-R |> b_unei()
+"R" |> 
+  rug("b", _, "unei")
 ```
 :::
 :::
@@ -50,7 +51,7 @@ R |> b_unei()
 
 More events to come this year. Stay tuned!
 
-<!-- This is a hands-on workshop on spatial data analysis using R. We will be using the `bruneimap` package to visualise and analyse spatial data in Brunei Darussalam. -->
+### Expectations
 
 ::: {.callout-warning title="Outcomes"}
 -   This is a hands-on, live-coding, lecture-style workshop.
@@ -60,6 +61,12 @@ More events to come this year. Stay tuned!
     3.  How to perform spatial analysis using R.
 -   A basic understanding of R is assumed.
 :::
+
+![](inspirational_cat.jpg)
+
+For some, maybe it will be a bit fast-paced (sorry in advanced!). 
+All the materials will be available online (see link on the right).
+I'm very happy to answer questions afterwards!
 
 ### Getting started with R
 

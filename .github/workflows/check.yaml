@@ -38,6 +38,8 @@ jobs:
 
       - name: Install bruneimap
         run: Rscript -e 'remotes::install_github("propertypricebn/bruneimap")'
+        env:
+          GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Run script
         run: Rscript -e 'source("br-spatial.R")'

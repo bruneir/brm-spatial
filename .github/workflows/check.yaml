@@ -1,0 +1,40 @@
+on:
+  workflow_dispatch:
+  push:
+    branches: main
+
+name: Check My Code
+
+jobs:
+  build-deploy:
+    runs-on: 
+      - windows-latest
+      - macos-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up R
+        uses: r-lib/actions/setup-r@v2
+
+      - name: Install packages
+        uses: r-lib/actions/setup-r-dependencies@v2
+        with:
+          packages: |
+            any::tidyverse 
+            any::sf
+            any::kernlab
+            any::ggrepel
+            any::osrm
+            any::remotes
+            any::CARBayes
+            any::mapview
+            any::scales
+
+      - name: Install bruneimap
+        run: Rscript -e 'remotes::install_github("propertypricebn/bruneimap")'
+
+      - name: Run script
+        run: Rscript -e 'source("br-spatial.R")'

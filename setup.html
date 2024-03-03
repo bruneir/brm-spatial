@@ -1,10 +1,13 @@
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
-<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
 <meta charset="utf-8">
 <meta name="generator" content="quarto-1.4.550">
+
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
 <meta name="dcterms.date" content="2024-03-09">
+
 <title>Analysing spatial data using R</title>
 <style>
 code{white-space: pre-wrap;}
@@ -74,6 +77,7 @@ div.csl-indent {
   margin-left: 2em;
 }</style>
 
+
 <script src="site_libs/quarto-nav/quarto-nav.js"></script>
 <script src="site_libs/clipboard/clipboard.min.js"></script>
 <script src="site_libs/quarto-search/autocomplete.umd.js"></script>
@@ -91,7 +95,8 @@ div.csl-indent {
 <link href="site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
 <script src="site_libs/quarto-contrib/glightbox/glightbox.min.js"></script>
 <link href="site_libs/quarto-contrib/glightbox/glightbox.min.css" rel="stylesheet">
-<link href="site_libs/quarto-contrib/glightbox/lightbox.css" rel="stylesheet"><script id="quarto-search-options" type="application/json">{
+<link href="site_libs/quarto-contrib/glightbox/lightbox.css" rel="stylesheet">
+<script id="quarto-search-options" type="application/json">{
   "location": "sidebar",
   "copy-button": false,
   "collapse-after": 3,
@@ -118,7 +123,10 @@ div.csl-indent {
     "search-label": "Search"
   }
 }</script>
+
+
 </head>
+
 <body>
 
 <div id="quarto-search-results"></div>
@@ -129,7 +137,10 @@ div.csl-indent {
     <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
     <div class="quarto-other-links"><h2>Other Links</h2><ul><li><a href="https://bruneir.github.io"><i class="bi bi-link-45deg"></i>Brunei R website</a></li></ul></div><div class="quarto-code-links"><h2>Code Links</h2><ul><li><a href="https://github.com/bruneir/brm-spatial/" target="_blank"><i class="bi bi-github"></i>GitHub Repo</a></li><li><a href="https://raw.githubusercontent.com/bruneir/brm-spatial/main/br-spatial.R"><i class="bi bi-link-45deg"></i>R Script</a></li></ul></div></div>
 <!-- main -->
-<main class="content" id="quarto-document-content"><header id="title-block-header" class="quarto-title-block default"><div class="quarto-title">
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
 <h1 class="title">Analysing spatial data using R</h1>
 <p class="subtitle lead">Brunei R User Group Meetup 🇧🇳</p>
 </div>
@@ -151,42 +162,41 @@ div.csl-indent {
   
 
 
-</header><section id="setup-instructions" class="level1"><h1>Setup instructions</h1>
+</header>
+
+
+<section id="setup-instructions" class="level1">
+<h1>Setup instructions</h1>
 <p>Prior to attending the event, please ensure you have done the following.</p>
 <ol type="1">
-<li>
-<p>Install R <strong>and</strong> RStudio from <a href="https://posit.co/download/rstudio-desktop/">https://posit.co/download/rstudio-desktop/</a>.</p>
-<p><a href="install_r.png" class="lightbox" data-gallery="quarto-lightbox-gallery-1"><img src="install_r.png" class="img-fluid"></a></p>
-<p>Note: These are two different things, so please ensure you have installed both of them.</p>
-</li>
-<li>
-<p>Install the following R packages by running the following code in the RStudio console:</p>
+<li><p>Install R <strong>and</strong> RStudio from <a href="https://posit.co/download/rstudio-desktop/">https://posit.co/download/rstudio-desktop/</a>.</p>
+<p><a href="img/install_r.png" class="lightbox" data-gallery="quarto-lightbox-gallery-1"><img src="img/install_r.png" class="img-fluid"></a></p>
+<p>Note: These are two different things, so please ensure you have installed both of them.</p></li>
+<li><p>Install the following R packages by running the following code in the RStudio console:</p>
 <div class="cell" data-layout-align="center">
-<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html">install.packages</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span></span>
-<span>  <span class="st">"tidyverse"</span>, </span>
-<span>  <span class="st">"sf"</span>, </span>
-<span>  <span class="st">"kernlab"</span>, </span>
-<span>  <span class="st">"ggrepel"</span>, </span>
-<span>  <span class="st">"osrm"</span>, </span>
-<span>  <span class="st">"remotes"</span>,</span>
-<span>  <span class="st">"CARBayes"</span>,</span>
-<span>  <span class="st">"mapview"</span>,</span>
-<span>  <span class="st">"scales"</span></span>
-<span><span class="op">)</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</div>
-</li>
-<li>
-<p>Install the <a href="https://github.com/propertypricebn/bruneimap">bruneimap</a> package by running the following code in the RStudio console.</p>
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">install.packages</span>(<span class="fu">c</span>(</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>  <span class="st">"tidyverse"</span>, </span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>  <span class="st">"sf"</span>, </span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>  <span class="st">"kernlab"</span>, </span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>  <span class="st">"ggrepel"</span>, </span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>  <span class="st">"osrm"</span>, </span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>  <span class="st">"remotes"</span>,</span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>  <span class="st">"CARBayes"</span>,</span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>  <span class="st">"mapview"</span>,</span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>  <span class="st">"scales"</span></span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div></li>
+<li><p>Install the <code>{bruneimap}</code> package by running the following code in the RStudio console.</p>
 <div class="cell" data-layout-align="center">
-<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu">remotes</span><span class="fu">::</span><span class="fu"><a href="https://remotes.r-lib.org/reference/install_github.html">install_github</a></span><span class="op">(</span><span class="st">"propertypricebn/bruneimap"</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</div>
-</li>
-<li>
-<p>Download the material for this workshop by cloning the <a href="https://github.com/bruneir/brm-spatial/">GitHub repo</a> or downloading the zip file. Unzip the file (or clone the repo) onto a convenient location on your computer.</p>
-<p><a href="download_github.png" class="lightbox" data-gallery="quarto-lightbox-gallery-2"><img src="download_github.png" class="img-fluid"></a></p>
-</li>
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>remotes<span class="sc">::</span><span class="fu">install_github</span>(<span class="st">"propertypricebn/bruneimap"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div></li>
+<li><p>Download the material for this workshop by cloning the <a href="https://github.com/bruneir/brm-spatial/">GitHub repo</a> or downloading the zip file. Unzip the file (or clone the repo) onto a convenient location on your computer.</p>
+<p><a href="img/download_github.png" class="lightbox" data-gallery="quarto-lightbox-gallery-2"><img src="img/download_github.png" class="img-fluid"></a></p></li>
 <li><p>Click on <code>brm-spatial.Rproj</code> to open the project in RStudio.</p></li>
-</ol></section><section id="ready-to-rock-and-roll" class="level1"><h1>Ready to rock and roll! 🎸</h1>
+</ol>
+</section>
+<section id="ready-to-rock-and-roll" class="level1">
+<h1>Ready to rock and roll! 🎸</h1>
 <p><u>Addendum</u></p>
 <p>Depending on the OS you are using, you may need to install additional developer tools.</p>
 <ul>
@@ -197,7 +207,9 @@ div.csl-indent {
 
 
 
-</section><div id="quarto-appendix" class="default"><section class="quarto-appendix-contents" role="doc-bibliography" id="quarto-bibliography"><h2 class="anchored quarto-appendix-heading">References</h2><div id="refs" class="references csl-bib-body hanging-indent" data-entry-spacing="0" role="list">
+</section>
+
+<div id="quarto-appendix" class="default"><section class="quarto-appendix-contents" role="doc-bibliography" id="quarto-bibliography"><h2 class="anchored quarto-appendix-heading">References</h2><div id="refs" class="references csl-bib-body hanging-indent" data-entry-spacing="0" role="list">
 <div id="ref-bivand2008applied" class="csl-entry" role="listitem">
 Bivand, Roger S, Edzer J Pebesma, Virgilio Gómez-Rubio, and Edzer Jan Pebesma. 2008. <em>Applied Spatial Data Analysis with <span>R</span></em>. Vol. 747248717. Springer.
 </div>
@@ -219,7 +231,8 @@ Pebesma, Edzer, and Roger Bivand. 2023. <em>Spatial <span>Data Science</span>: <
 <div id="ref-wood2017generalized" class="csl-entry" role="listitem">
 Wood, Simon N. 2017. <em>Generalized <span>Additive Models</span>: <span>An Introduction</span> with <span>R</span>, <span>Second Edition</span></em>. 2nd ed. Boca Raton: <span>Chapman and Hall/CRC</span>. <a href="https://doi.org/10.1201/9781315370279">https://doi.org/10.1201/9781315370279</a>.
 </div>
-</div></section></div></main><!-- /main --><script id="quarto-html-after-body" type="application/javascript">
+</div></section></div></main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
 window.document.addEventListener("DOMContentLoaded", function (event) {
   const toggleBodyColorMode = (bsSheetEl) => {
     const mode = bsSheetEl.getAttribute("data-mode");
@@ -607,7 +620,7 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
 });
 </script>
 </div> <!-- /content -->
-<script>var lightboxQuarto = GLightbox({"closeEffect":"zoom","descPosition":"bottom","selector":".lightbox","openEffect":"zoom","loop":false});
+<script>var lightboxQuarto = GLightbox({"closeEffect":"zoom","selector":".lightbox","loop":false,"openEffect":"zoom","descPosition":"bottom"});
 window.onload = () => {
   lightboxQuarto.on('slide_before_load', (data) => {
     const { slideIndex, slideNode, slideConfig, player, trigger } = data;
@@ -632,6 +645,8 @@ window.onload = () => {
 
 };
           </script>
+
+
 
 
 </body></html>

@@ -14,7 +14,8 @@ Prior to attending the event, please ensure you have done the following.
    
    ![](img/install_r.png)
    
-   Note: These are two different things, so please ensure you have installed both of them. 
+   Note: These are two different things, so please ensure you have installed both of them. Tak a look also at [https://bruneir.github.io/posts/welcome/](https://bruneir.github.io/posts/welcome/)
+   
    
 2. Install the following R packages by running the following code in the RStudio console:
 

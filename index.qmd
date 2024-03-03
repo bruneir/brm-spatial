@@ -25,7 +25,7 @@ Welcome to the first Brunei R User Group meetup!
 :::
 
 ::: {#second-column}
-![](img/https://bruneir.github.io/bruneiR-Rlogo.jpg)
+![](https://bruneir.github.io/bruneiR-Rlogo.jpg)
 
 ``` r
 "R" |> 
@@ -45,12 +45,11 @@ More events to come this year. Stay tuned!
 ### Expectations
 
 ::: {.callout-warning title="Outcomes"}
--   This is a hands-on, live-coding, lecture-style "workshop".
--   Expect to learn (or at the very least, see me do!)...
-    1.  What spatial data is and why it's important.
-    2.  What statistical analysis can be done with spatial data.
-    3.  How to perform spatial analysis using R.
--   A basic understanding of R is assumed.
+This is a hands-on, live-coding, lecture-style "workshop". Expect to learn (or at the very least, see me do!)...
+  1.  What spatial data is and why it's important.
+  2.  What statistical analysis can be done with spatial data.
+  3.  How to perform spatial analysis using R.
+A basic understanding of R is assumed.
 :::
 
 ![](img/inspirational_cat.jpg)

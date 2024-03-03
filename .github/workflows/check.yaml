@@ -35,6 +35,7 @@ jobs:
             any::CARBayes
             any::mapview
             any::scales
+            any::ggsci
 
       - name: Install bruneimap
         run: Rscript -e 'pak::pak("propertypricebn/bruneimap")'

@@ -31,7 +31,8 @@ Prior to attending the event, please ensure you have done the following.
      "remotes",
      "CARBayes",
      "mapview",
-     "scales"
+     "scales",
+     "ggsci"
    ))
    ```
 3. Install the `{bruneimap}` package by running the following code in the RStudio console.

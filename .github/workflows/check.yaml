@@ -37,7 +37,7 @@ jobs:
             any::scales
 
       - name: Install bruneimap
-        run: Rscript -e 'remotes::install_github("propertypricebn/bruneimap")'
+        run: Rscript -e 'pak::pak("propertypricebn/bruneimap")'
         env:
           GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
 

@@ -56,9 +56,9 @@ A basic understanding of R is assumed.
 
 ![](img/inspirational_cat.jpg)
 
-For some, maybe it will be a bit fast-paced (sorry in advanced!). All the materials will be available online (see link on the right).
+For some, maybe it will be a bit fast-paced (sorry in advanced!). All the materials will be available online (see link on the right). Truthfully, I am not expecting you to walk away as an expert in spatial analysis, given the length of this talk. At the very least however I hope you become aware of the various spatial techniques and how they can be achieved in R.
 
-I'm very happy to answer questions afterwards!
+I'm very happy to answer questions afterwards! 😀
 
 ### Getting started with R
 

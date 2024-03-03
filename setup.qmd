@@ -12,7 +12,7 @@ Prior to attending the event, please ensure you have done the following.
 
 1. Install R **and** RStudio from  [https://posit.co/download/rstudio-desktop/](https://posit.co/download/rstudio-desktop/). 
    
-   ![](install_r.png)
+   ![](img/install_r.png)
    
    Note: These are two different things, so please ensure you have installed both of them. 
    
@@ -43,7 +43,7 @@ Prior to attending the event, please ensure you have done the following.
 
 4. Download the material for this workshop by cloning the [GitHub repo](https://github.com/bruneir/brm-spatial/) or downloading the zip file. Unzip the file (or clone the repo) onto a convenient location on your computer.
 
-   ![](download_github.png)
+   ![](img/download_github.png)
 
 5. Click on `brm-spatial.Rproj` to open the project in RStudio.
 

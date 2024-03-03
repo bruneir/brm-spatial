@@ -25,7 +25,7 @@ Welcome to the first Brunei R User Group meetup!
 :::
 
 ::: {#second-column}
-![](https://bruneir.github.io/bruneiR-Rlogo.jpg)
+![](img/https://bruneir.github.io/bruneiR-Rlogo.jpg)
 
 ``` r
 "R" |> 
@@ -53,7 +53,7 @@ More events to come this year. Stay tuned!
 -   A basic understanding of R is assumed.
 :::
 
-![](inspirational_cat.jpg)
+![](img/inspirational_cat.jpg)
 
 For some, maybe it will be a bit fast-paced (sorry in advanced!). 
 All the materials will be available online (see link on the right).
@@ -611,7 +611,7 @@ table(brd$highway)
 
 According to this [wiki](https://wiki.openstreetmap.org/wiki/OpenStreetMap_Carto/Lines), In OpenStreetMap, the major roads of a road network are sorted on an importance scale, from motorway to quaternary road.
 
-![](osm_roads.png)
+![](img/osm_roads.png)
 
 ```{r}
 brd_mjr <- 
@@ -665,13 +665,13 @@ This analysis guides urban and healthcare planning by pinpointing areas with ina
 - Calculating distances between points and lines using `{osrm}` package.
 :::
 
-
 First we "crop" the road network to the Belait region.
 
 ```{r}
-brd_belait <- 
-  brd |>
-  st_intersection(filter(dis_sf, name == "Belait"))
+brd_belait <- st_intersection(
+  brd,
+  filter(dis_sf, name == "Belait")
+)
 
 ggplot(brd_belait) +
   geom_sf() +

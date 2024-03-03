@@ -46,16 +46,17 @@ More events to come this year. Stay tuned!
 
 ::: {.callout-warning title="Outcomes"}
 This is a hands-on, live-coding, lecture-style "workshop". Expect to learn (or at the very least, see me do!)...
-  1.  What spatial data is and why it's important.
-  2.  What statistical analysis can be done with spatial data.
-  3.  How to perform spatial analysis using R.
+
+1.  What spatial data is and why it's important.
+2.  What statistical analysis can be done with spatial data.
+3.  How to perform spatial analysis using R.
+
 A basic understanding of R is assumed.
 :::
 
 ![](img/inspirational_cat.jpg)
 
-For some, maybe it will be a bit fast-paced (sorry in advanced!). 
-All the materials will be available online (see link on the right).
+For some, maybe it will be a bit fast-paced (sorry in advanced!). All the materials will be available online (see link on the right).
 
 I'm very happy to answer questions afterwards!
 
@@ -63,11 +64,11 @@ I'm very happy to answer questions afterwards!
 
 I'll just talk about these points briefly:
 
-- What's the difference between R and RStudio?
-- Quick run through RStudio's features
-- Set up a project
-- R Scripts vs Notebooks (`.qmd` or `.Rmd`)
-- Executing commands in R
+-   What's the difference between R and RStudio?
+-   Quick run through RStudio's features
+-   Set up a project
+-   R Scripts vs Notebooks (`.qmd` or `.Rmd`)
+-   Executing commands in R
 
 ```{r}
 #| code-fold: false
@@ -86,9 +87,7 @@ head(run_x)
 
 ### List of packages
 
-The power of R comes from its diverse range of user-contributed packages.
-To install a package in R, we type `install.packages("package_name")`.
-As an example, try install the `{tidyverse}` package.
+The power of R comes from its diverse range of user-contributed packages. To install a package in R, we type `install.packages("package_name")`. As an example, try install the `{tidyverse}` package.
 
 ```{r}
 #| code-fold: false
@@ -96,12 +95,7 @@ As an example, try install the `{tidyverse}` package.
 install.packages("tidyverse")
 ```
 
-A bunch of things will happen on your screen that makes you look like a legit hacker.
-(It's normal! Unles... there are some errors in the installation process 😅)
-Once that's done, you will want to load the package using `library()` to start using it.
-Here's a list of packages we will be using today. 
-You'll need to install all of them before we begin. 
-In RStudio, there will be a prompt (yellow line at the top of the source pane) for you to install all these packages with a single click.
+A bunch of things will happen on your screen that makes you look like a legit hacker. (It's normal! Unles... there are some errors in the installation process 😅) Once that's done, you will want to load the package using `library()` to start using it. Here's a list of packages we will be using today. You'll need to install all of them before we begin. In RStudio, there will be a prompt (yellow line at the top of the source pane) for you to install all these packages with a single click.
 
 ```{r}
 #| label: setup
@@ -116,8 +110,7 @@ library(tidyverse)
 theme_set(theme_bw())  # set the theme
 ```
 
-Furthermore, there are packages that are not yet on CRAN, but are available on GitHub. 
-Please install them using the `remotes` package.
+Furthermore, there are packages that are not yet on CRAN, but are available on GitHub. Please install them using the `remotes` package.
 
 ```{r}
 #| code-fold: false
@@ -125,8 +118,7 @@ Please install them using the `remotes` package.
 remotes::install_github("propertypricebn/bruneimap")
 ```
 
-Of course, don't forget to load it.
-For more information, please check out the package's [GitHub page](https://github.com/propertypricebn/bruneimap).
+Of course, don't forget to load it. For more information, please check out the package's [GitHub page](https://github.com/propertypricebn/bruneimap).
 
 ```{r}
 #| code-fold: false
@@ -136,15 +128,13 @@ library(bruneimap)
 ## Introduction
 
 ::: {.callout-tip title="What we'll learn"}
-- Importance of accounting for spatial effects in data.
-- Using the Moran's I test to detect spatial autocorrelations.
+-   Importance of accounting for spatial effects in data.
+-   Using the Moran's I test to detect spatial autocorrelations.
 :::
 
-Consider the distribution of house prices in Brunei^[Artificial data generated for the purposes of this tutorial. Not to be used for research purposes!].
-I think it is well accepted that the prices of houses in Brunei are not uniformly distributed across the country, but are determined by location.
-@fig-hsp-spatial (a) shows a faithful representation of house prices in Brunei, and we can clearly see a clustering effect.
-Many economists, realtors, and urban planners will undoubtedly tell you that there is some kind of "neighbouring-effect" at play here.
-House closer to each other tend to exhibit more similar properties.
+Consider the distribution of house prices in Brunei[^1]. I think it is well accepted that the prices of houses in Brunei are not uniformly distributed across the country, but are determined by location. @fig-hsp-spatial (a) shows a faithful representation of house prices in Brunei, and we can clearly see a clustering effect. Many economists, realtors, and urban planners will undoubtedly tell you that there is some kind of "neighbouring-effect" at play here. House closer to each other tend to exhibit more similar properties.
+
+[^1]: Artificial data generated for the purposes of this tutorial. Not to be used for research purposes!
 
 ```{r}
 #| label: fig-hsp-spatial
@@ -185,21 +175,14 @@ p1
 p2
 ```
 
-When we perform statistical modelling and ignore the spatial component, effectively what we are assuming is that the prices of houses are independent of their location.
-Under this assumption, @fig-hsp-spatial (b) is a valid representation of house prices in Brunei (uniformity of prices).
-This is a very dangerous thing to do, especially when the spatial effect are non-ignorable. 
-We may get nonsensical results and inferences out of the resulting model.
+When we perform statistical modelling and ignore the spatial component, effectively what we are assuming is that the prices of houses are independent of their location. Under this assumption, @fig-hsp-spatial (b) is a valid representation of house prices in Brunei (uniformity of prices). This is a very dangerous thing to do, especially when the spatial effect are non-ignorable. We may get nonsensical results and inferences out of the resulting model.
 
-Of course, the degree to which this assumption is violated depends on the context and the problem at hand, as well as the scale of the data.
-For the above-type problem where we have *area-level data*, one can use the Moran's I test of global heterogeneity to test for spatial autocorrelation.
-It tests
+Of course, the degree to which this assumption is violated depends on the context and the problem at hand, as well as the scale of the data. For the above-type problem where we have *area-level data*, one can use the Moran's I test of global heterogeneity to test for spatial autocorrelation. It tests
 
-> | $H_0$: No spatial autocorrelation 
-  | $H_1$: (Positive) Spatial autocorrelation present
+> | $H_0$: No spatial autocorrelation
+> | $H_1$: (Positive) Spatial autocorrelation present
 
-To test this in R, we can use the `spdep::moran.test()` function from the `{spdep}` package.
-There are two key ingredients here, the actual data itself (house prices), and also the neighbourhood relationship between all the areas (spatial structure).
-The code is as follows.
+To test this in R, we can use the `spdep::moran.test()` function from the `{spdep}` package. There are two key ingredients here, the actual data itself (house prices), and also the neighbourhood relationship between all the areas (spatial structure). The code is as follows.
 
 ```{r}
 #| label: moran
@@ -216,9 +199,9 @@ moran.test(hsp_sf$price, listw = Wlist, zero.policy = TRUE, na.action = na.omit)
 ### Types of GIS data
 
 ::: {.callout-tip title="What we'll learn"}
-- Types of GIS data and how these are handled in R.
-- Difference between spatial and non-spatial data analysis.
-- Importance of geocoding your data for spatial analysis.
+-   Types of GIS data and how these are handled in R.
+-   Difference between spatial and non-spatial data analysis.
+-   Importance of geocoding your data for spatial analysis.
 :::
 
 Roughly speaking, there are 4 types of GIS data.
@@ -270,13 +253,11 @@ In R, geocoding using `{tidyverse}` can be achieved using the `dplyr::left_join(
 ## `(MULTI)POINT` data
 
 ::: {.callout-tip title="What we'll learn"}
-- Loading data sets in R using `readr::read_csv()`.
-- Identifying data types and their implications.
+-   Loading data sets in R using `readr::read_csv()`.
+-   Identifying data types and their implications.
 :::
 
-
-Use the data from @jaafar2023data on the physicochemical characteristics and texture classification of soil in Bornean tropical heath forests affected by exotic Acacia mangium.
-There are three datasets provided.
+Use the data from @jaafar2023data on the physicochemical characteristics and texture classification of soil in Bornean tropical heath forests affected by exotic Acacia mangium. There are three datasets provided.
 
 1.  GIS data ([WGS84](https://en.wikipedia.org/wiki/World_Geodetic_System "World Geodetic System") coordinates) of all study plots.
 2.  Soil physicochemical property data. This contains details of soil physical, chemical, nutrient concentration of the three habits studied.
@@ -299,10 +280,10 @@ soil_texture <- read_csv("data/8389823/Soil texture classification.csv")
 ### Clean up the point data
 
 ::: {.callout-tip title="What we'll learn"}
-- Highlighting the need for cleaning and preprocessing data. 
-- Using `glimpse()` to peek at the data.
-- Using `mutate()` to change stuff in the data set.
-- Using `str()` to look at the structure of an R object.
+-   Highlighting the need for cleaning and preprocessing data.
+-   Using `glimpse()` to peek at the data.
+-   Using `mutate()` to change stuff in the data set.
+-   Using `str()` to look at the structure of an R object.
 :::
 
 Let's take a look at the point data set.
@@ -349,12 +330,11 @@ soil_gps
 ### Preliminary plot of the data
 
 ::: {.callout-tip title="What we'll learn"}
-- Structure of a `ggplot()` (grammar of graphics).
-- Using `geom_sf()` to plot the GIS data, and adding points using `geom_point()`.
+-   Structure of a `ggplot()` (grammar of graphics).
+-   Using `geom_sf()` to plot the GIS data, and adding points using `geom_point()`.
 :::
 
-Using the data contained in the `{bruneimap}` package, we can plot the study areas on a map of Brunei.
-Use either the `brn_sf`, `dis_sf`, `mkm_sf` or `kpg_sf` data sets.
+Using the data contained in the `{bruneimap}` package, we can plot the study areas on a map of Brunei. Use either the `brn_sf`, `dis_sf`, `mkm_sf` or `kpg_sf` data sets.
 
 ```{r}
 ggplot(brn_sf) +
@@ -381,12 +361,11 @@ ggplot(mkm_sf) +
   )
 ```
 
-
 ### Merge with the study data
 
 ::: {.callout-tip title="What we'll learn"}
-- Using `left_join()` to merge two data sets together.
-- Using `geom_jitter()` to plot the study variables that are overlapping.
+-   Using `left_join()` to merge two data sets together.
+-   Using `geom_jitter()` to plot the study variables that are overlapping.
 :::
 
 Let's take a look at the data set.
@@ -397,8 +376,7 @@ glimpse(soil_physico)
 glimpse(soil_texture)
 ```
 
-The `soil_physico` and `soil_texture` data sets contain the same columns, so we might as well merge them together. 
-We will use the `dplyr::left_join()` function.
+The `soil_physico` and `soil_texture` data sets contain the same columns, so we might as well merge them together. We will use the `dplyr::left_join()` function.
 
 ```{r}
 # Actually I just want to merge these two together
@@ -410,9 +388,7 @@ soil_df <- left_join(
 soil_df
 ```
 
-Once we've done that, the `soil_df` data set (the study variables) is actually missing the spatial data. 
-We need to geocode it with the `soil_gps` data set.
-Again, `dplyr::left_join()` to the rescue!
+Once we've done that, the `soil_df` data set (the study variables) is actually missing the spatial data. We need to geocode it with the `soil_gps` data set. Again, `dplyr::left_join()` to the rescue!
 
 ```{r}
 soil_df <- left_join(
@@ -422,10 +398,7 @@ soil_df <- left_join(
 )
 ```
 
-Now we're in a position to plot the study variables on the map.
-Note that there are only 18 plots in the `soil_gps` data set, and each plot has repeated measurements. 
-That means when we plot it, it will overlap and look like a single point. 
-So a good thing to do is to jitter the point so it's easier to see.
+Now we're in a position to plot the study variables on the map. Note that there are only 18 plots in the `soil_gps` data set, and each plot has repeated measurements. That means when we plot it, it will overlap and look like a single point. So a good thing to do is to jitter the point so it's easier to see.
 
 ```{r}
 ggplot(kpg_sf) +
@@ -447,41 +420,27 @@ ggplot(kpg_sf) +
 ### Predictive models
 
 ::: {.callout-tip title="What we'll learn"}
-- Using `kernlab::gpr()` to build a predictive Gaussian process regression (kriging) model.
-- Important to consult an expert in the field before building a model. GIGO!
+-   Using `kernlab::gpr()` to build a predictive Gaussian process regression (kriging) model.
+-   Important to consult an expert in the field before building a model. GIGO!
 :::
 
-At this stage, we probably want to consult an expert in this field, and ask what variables are important for predicting the nitrogen content in the soil, so that we can build a *predictive model*.
-In mathematics, a model is simply a relationship between variables, like so:
-$$
+At this stage, we probably want to consult an expert in this field, and ask what variables are important for predicting the nitrogen content in the soil, so that we can build a *predictive model*. In mathematics, a model is simply a relationship between variables, like so: $$
 y = f(x_1,x_2,\dots,x_p) + \epsilon
-$$
-where the $x_1,\dots,x_p$ are the input variables, and $y$ is the output variable of interest (in this case, nitrogen concentrations).
-No model can perfectly account for this relationship, so we add a term $\epsilon$ which represents the error in the model.
-Ideally this should be as small as possible.
+$$ where the $x_1,\dots,x_p$ are the input variables, and $y$ is the output variable of interest (in this case, nitrogen concentrations). No model can perfectly account for this relationship, so we add a term $\epsilon$ which represents the error in the model. Ideally this should be as small as possible.
 
 Several models, ranging from classical statistical models to complex machine learning models, are possible:
 
-1. Linear regression model -- `lm()`
-2. Generalised additive models (GAM) [@wood2017generalized] -- `mgcv::gam()`
-3. Gaussian process regression (Kriging) -- `kernlab::gausspr()`
-4. Random forests -- `randomForest::randomForest()`
-5. Geographically weighted regression (GWR) -- `spgwr::gwr()`
+1.  Linear regression model -- `lm()`
+2.  Generalised additive models (GAM) [@wood2017generalized] -- `mgcv::gam()`
+3.  Gaussian process regression (Kriging) -- `kernlab::gausspr()`
+4.  Random forests -- `randomForest::randomForest()`
+5.  Geographically weighted regression (GWR) -- `spgwr::gwr()`
 
-Let's focus on Gaussian process regression (because that's one that I know quite well).
-The idea of GPR is to model the relationship between the input variables and the output variable as a multivariate Gaussian distribution:
-$$
+Let's focus on Gaussian process regression (because that's one that I know quite well). The idea of GPR is to model the relationship between the input variables and the output variable as a multivariate Gaussian distribution: $$
 f(x) \sim \operatorname{N}\big(0, K(x,x')\big)
-$$
-where $K(x,x')$ is the covariance function, which measures the similarity between the input variables $x$ and $x'$.
-The most common covariance function is the squared exponential function:
-$$
+$$ where $K(x,x')$ is the covariance function, which measures the similarity between the input variables $x$ and $x'$. The most common covariance function is the squared exponential function: $$
 K(x,x') = \exp\left(-\frac{1}{2}\sum_{i=1}^p (x_i - x'_i)^2\right).
-$$
-Let $d$ represent the "distance" between two points. 
-Then the squared exponential kernel becomes very small when this distance $d$ is large, and very large when $d$ is small.
-Put another way, since elements of the matrix $K$ represent co-variability, that means two points that are close together will behave similarly, and vice versa.
-This is very much in line with Tobler's first law of geography: "Everything is related to everything else, but near things are more related than distant things".
+$$ Let $d$ represent the "distance" between two points. Then the squared exponential kernel becomes very small when this distance $d$ is large, and very large when $d$ is small. Put another way, since elements of the matrix $K$ represent co-variability, that means two points that are close together will behave similarly, and vice versa. This is very much in line with Tobler's first law of geography: "Everything is related to everything else, but near things are more related than distant things".
 
 ```{r}
 x <- seq(-4, 4, length = 100)
@@ -491,8 +450,7 @@ tibble(d = x, Kxx = y) |>
   geom_line() 
 ```
 
-Given the assumed behaviour of our function $f(x)$, and what is observed from the data, we can then make predictions about the nitrogen content at unobserved locations.
-Skipping over a whole lot of mathematics, let's just fit this model in R.
+Given the assumed behaviour of our function $f(x)$, and what is observed from the data, we can then make predictions about the nitrogen content at unobserved locations. Skipping over a whole lot of mathematics, let's just fit this model in R.
 
 ```{r}
 # Build a model to predict Nitrogen from all numeric variables. This is
@@ -504,9 +462,7 @@ mod <- gausspr(Nitrogen ~ ., data = soil_df)
 mod
 ```
 
-Having done that, we now want to prepare a prediction data frame.
-Essentially, we will rasterise the study area into a predefined grid.
-For the other variables, we will just set them at their mean values.
+Having done that, we now want to prepare a prediction data frame. Essentially, we will rasterise the study area into a predefined grid. For the other variables, we will just set them at their mean values.
 
 ```{r}
 xr <- c(114.4, 114.6)
@@ -559,10 +515,9 @@ ggplot() +
   coord_sf(xlim = xr, ylim = yr)
 ```
 
-::: {.callout-warning}
+::: callout-warning
 Garbage In Garbage Out! Modelling is as much an art as it is a science. Careful consideration needs to be made as to what is considered a predictor of a variable.
 :::
-
 
 <!-- ```{r} -->
 
@@ -583,14 +538,12 @@ Garbage In Garbage Out! Modelling is as much an art as it is a science. Careful 
 ## Line data (`(MULTI)LINESTRING`)
 
 ::: {.callout-tip title="What we'll learn"}
-- How to load spatial data sets using `sf::read_sf()` and editing the CRS using `sf::st_transform()`.
-- How to filter data using `dplyr::filter()`.
-- How to plot line data using `ggplot2::geom_sf()`.
+-   How to load spatial data sets using `sf::read_sf()` and editing the CRS using `sf::st_transform()`.
+-   How to filter data using `dplyr::filter()`.
+-   How to plot line data using `ggplot2::geom_sf()`.
 :::
 
-
-For this example, we'll play with the road network shape file obtained from OpenStreetMaps.
-The data is in geojson format, so let's import that into R.
+For this example, we'll play with the road network shape file obtained from OpenStreetMaps. The data is in geojson format, so let's import that into R.
 
 ```{r}
 brd <- 
@@ -599,10 +552,7 @@ brd <-
 glimpse(brd)
 ```
 
-There are 25,570 features in this data set, which may be a bit too much.
-Let's try to focus on the major roads only.
-This information seems to be contained in the `highway` column.
-What's in it?
+There are 25,570 features in this data set, which may be a bit too much. Let's try to focus on the major roads only. This information seems to be contained in the `highway` column. What's in it?
 
 ```{r}
 table(brd$highway)
@@ -629,39 +579,31 @@ ggplot() +
   ggsci::scale_colour_npg()
 ```
 
-With this, I asked ChatGPT what kind of spatial analyses can be done on this data set. 
-It said, when paired with appropriate data, we can do things like:
+With this, I asked ChatGPT what kind of spatial analyses can be done on this data set. It said, when paired with appropriate data, we can do things like:
 
-1. **Network Connectivity Analysis**
-   - Assess reachability and identify disconnected road network components.
+1.  **Network Connectivity Analysis**
+    -   Assess reachability and identify disconnected road network components.
+2.  **Accessibility and Service Area Analysis**
+    -   Determine service areas and catchment areas for essential services.
+3.  **Traffic Simulation and Management**
+    -   Simulate traffic flow to identify bottlenecks and suggest optimal routing.
+4.  **Environmental Impact Assessment**
+    -   Estimate vehicular emissions and model noise pollution from roads.
+5.  **Urban and Regional Planning**
+    -   Examine land use compatibility and assess infrastructure development needs.
+6.  **Safety Analysis**
+    -   Identify accident hotspots and assess pedestrian safety.
+7.  **Economic Analysis**
+    -   Evaluate economic accessibility and the impact of road projects.
 
-2. **Accessibility and Service Area Analysis**
-   - Determine service areas and catchment areas for essential services.
-
-3. **Traffic Simulation and Management**
-   - Simulate traffic flow to identify bottlenecks and suggest optimal routing.
-
-4. **Environmental Impact Assessment**
-   - Estimate vehicular emissions and model noise pollution from roads.
-
-5. **Urban and Regional Planning**
-   - Examine land use compatibility and assess infrastructure development needs.
-
-6. **Safety Analysis**
-   - Identify accident hotspots and assess pedestrian safety.
-
-7. **Economic Analysis**
-   - Evaluate economic accessibility and the impact of road projects.
-
-Let's pick one of these: Calculate the distance between the centroid of several regions and the major hospital in the Belait district. 
-This analysis guides urban and healthcare planning by pinpointing areas with inadequate access to emergency services, enabling targeted infrastructure and service improvements. 
+Let's pick one of these: Calculate the distance between the centroid of several regions and the major hospital in the Belait district. This analysis guides urban and healthcare planning by pinpointing areas with inadequate access to emergency services, enabling targeted infrastructure and service improvements.
 
 ### Road networks in Belait region
 
 ::: {.callout-tip title="What we'll learn"}
-- Manipulating GIS data using `sf::st_intersection()` and the like. Useful for reorganising the spatial structure (without having to do this in QGIS or ArcGIS).
-- Sampling points from a line data set.
-- Calculating distances between points and lines using `{osrm}` package.
+-   Manipulating GIS data using `sf::st_intersection()` and the like. Useful for reorganising the spatial structure (without having to do this in QGIS or ArcGIS).
+-   Sampling points from a line data set.
+-   Calculating distances between points and lines using `{osrm}` package.
 :::
 
 First we "crop" the road network to the Belait region.
@@ -677,9 +619,7 @@ ggplot(brd_belait) +
   geom_sf(data = filter(dis_sf, name == "Belait"), fill = NA)
 ```
 
-If we were to sample random points from the Belait polygon, we might get non-sensical areas like the extremely rural areas or forest reserves.
-So the idea is to sample random points from the road network itself.
-For this, we need a function that will get us a random point on the path itself.
+If we were to sample random points from the Belait polygon, we might get non-sensical areas like the extremely rural areas or forest reserves. So the idea is to sample random points from the road network itself. For this, we need a function that will get us a random point on the path itself.
 
 ```{r}
 get_random_point <- function(linestring) {
@@ -690,10 +630,8 @@ get_random_point <- function(linestring) {
 get_random_point(brd_belait$geometry[1])
 ```
 
-Once we have this function, we need to `map()` this function onto each of the linestrings in the `brd_belait` data set.
-The resulting list of points is too large! 
-So we will just sample 100 points (you can experiment with this number).
- 
+Once we have this function, we need to `map()` this function onto each of the linestrings in the `brd_belait` data set. The resulting list of points is too large! So we will just sample 100 points (you can experiment with this number).
+
 ```{r}
 random_points <-
   map(brd_belait$geometry, get_random_point) |>
@@ -701,11 +639,7 @@ random_points <-
   slice_sample(n = 100)
 ```
 
-What we have now is a data frame of 100 random points on the road network in the Belait district.
-We will use the `{osrm}` package to calculate the distance between these points and the Suri Seri Begawan Hospital in Kuala Belait.
-The output will be three things: 1) The duration (minutes); 2) The distance (km); and 3) a `LINESTRING` object that represents the path to get to the hospital.
-Unfortunately the `osrmRoute()` function is not vectorised, i.e. we have to do it one-by-one for each of the 100 points.
-Luckily, we can just make a `for` loop and store the results in a list.
+What we have now is a data frame of 100 random points on the road network in the Belait district. We will use the `{osrm}` package to calculate the distance between these points and the Suri Seri Begawan Hospital in Kuala Belait. The output will be three things: 1) The duration (minutes); 2) The distance (km); and 3) a `LINESTRING` object that represents the path to get to the hospital. Unfortunately the `osrmRoute()` function is not vectorised, i.e. we have to do it one-by-one for each of the 100 points. Luckily, we can just make a `for` loop and store the results in a list.
 
 ```{r}
 suriseri <- c(114.198778, 4.583444)
@@ -721,8 +655,7 @@ res <-
 res
 ```
 
-So with all that done, we can now plot the paths taken by the 100 random points to the hospital. 
-The map gives us an indication of which areas are underserved by the hospital, and can guide urban and healthcare planning by pinpointing areas with inadequate access to emergency services, enabling targeted infrastructure and service improvements.
+So with all that done, we can now plot the paths taken by the 100 random points to the hospital. The map gives us an indication of which areas are underserved by the hospital, and can guide urban and healthcare planning by pinpointing areas with inadequate access to emergency services, enabling targeted infrastructure and service improvements.
 
 ```{r}
 ggplot(res) +
@@ -736,9 +669,9 @@ ggplot(res) +
 
 Improving the analysis
 
-- Weight analysis by populous areas. Outcalls to hospitals can be modelled using a Poisson distribution with the population as the rate parameter.
-- Use a more sophisticated routing algorithm that accounts for traffic conditions and road quality (am vs pm, weekends vs weekdays, etc.).
-- Simpler to analyse at the kampong or mukim level? 
+-   Weight analysis by populous areas. Outcalls to hospitals can be modelled using a Poisson distribution with the population as the rate parameter.
+-   Use a more sophisticated routing algorithm that accounts for traffic conditions and road quality (am vs pm, weekends vs weekdays, etc.).
+-   Simpler to analyse at the kampong or mukim level?
 
 ## Areal data (`(MULTI)POLYGONS`)
 
@@ -748,18 +681,13 @@ Improving the analysis
 -   Using a binned colour scale, e.g. `ggplot2::geom_scale_fill_viridis_b()`
 :::
 
-When your study data is made up a finite number of non-overlapping areas, then you can represent them as polygons in R.
-This is the case for the kampong and mukim data in Brunei.
-As an example, let us look at the population of each kampong in Brunei.
-This dataset comes from the 2021 Brunei Census data [@deps2022population]
+When your study data is made up a finite number of non-overlapping areas, then you can represent them as polygons in R. This is the case for the kampong and mukim data in Brunei. As an example, let us look at the population of each kampong in Brunei. This dataset comes from the 2021 Brunei Census data [@deps2022population]
 
 ```{r}
 glimpse(bn_census2021)
 ```
 
-Each row of the data refers to a kampong-level observation. 
-While there are unique identifiers to this (`id`, `kampong`, `mukim`, `district`), we would still need to geocode this data set so that we can do fun things like plot it on a map.
-Let's use (again) `left_join()` to do this.
+Each row of the data refers to a kampong-level observation. While there are unique identifiers to this (`id`, `kampong`, `mukim`, `district`), we would still need to geocode this data set so that we can do fun things like plot it on a map. Let's use (again) `left_join()` to do this.
 
 ```{r}
 bn_pop_sf <- 
@@ -778,21 +706,14 @@ ggplot(bn_pop_sf) +
   scale_fill_viridis_c(na.value = NA)
 ```
 
-As expected, there are "hotspots" of population in the Brunei-Muara district, and to a lesser extent in the Belait district.
-We can make this graph a bit better by binning the population values.
-It seems to be dominated by a lot of these low value colours.
-Let's take a look at this further by inspecting a histogram.
+As expected, there are "hotspots" of population in the Brunei-Muara district, and to a lesser extent in the Belait district. We can make this graph a bit better by binning the population values. It seems to be dominated by a lot of these low value colours. Let's take a look at this further by inspecting a histogram.
 
 ```{r}
 ggplot(bn_pop_sf) +
   geom_histogram(aes(population), binwidth = 100)
 ```
 
-So maybe we can bin the population into 4 categories: 
-< 100, 101-1000, 1001-10000, and 10000+.
-For this we directly use the `scale_fill_viridis_b()` and adjust the breaks. 
-Otherwise we would have to `cut()` the population column and then use `scale_fill_manual()`.
-We also added the names of the top 10 most populous kampongs to the map using `ggrepel::geom_label_repel()`.
+So maybe we can bin the population into 4 categories: \< 100, 101-1000, 1001-10000, and 10000+. For this we directly use the `scale_fill_viridis_b()` and adjust the breaks. Otherwise we would have to `cut()` the population column and then use `scale_fill_manual()`. We also added the names of the top 10 most populous kampongs to the map using `ggrepel::geom_label_repel()`.
 
 ```{r}
 kpg_labels_sf <-
@@ -827,24 +748,16 @@ bn_pop_sf |>
 ### Condtional Autoregressive (CAR) models
 
 ::: {.callout-tip title="What we'll learn"}
-- Use spatial autoregressive models (CAR models) to quantify discrepancies in the variable of interest due to the area.
-- Use the `{CARBayes}` package to do this.
-- Plot interactive maps using `{mapview}`.
+-   Use spatial autoregressive models (CAR models) to quantify discrepancies in the variable of interest due to the area.
+-   Use the `{CARBayes}` package to do this.
+-   Plot interactive maps using `{mapview}`.
 :::
 
-One of the most interesting things about areal data is that you might want to find out how the value of a variable of interest is impacted simply by being in a certain area.
-A possible model could be
-$$
+One of the most interesting things about areal data is that you might want to find out how the value of a variable of interest is impacted simply by being in a certain area. A possible model could be $$
 y_i = \alpha + f(x_i) + \phi_i + \epsilon_i
-$$
-where $y_i$ is the value of the variable of interest in area $i$, $\alpha$ is the intercept, $f(x_i)$ is the covariate predictor, and $\phi_i$ represents the "offset" to the average value of $y_i$ due to the area $i$.
-If you're familiar with ANOVA this feels similar to that, except that we impose a certain structure to these $\phi_i$s:
-$$
+$$ where $y_i$ is the value of the variable of interest in area $i$, $\alpha$ is the intercept, $f(x_i)$ is the covariate predictor, and $\phi_i$ represents the "offset" to the average value of $y_i$ due to the area $i$. If you're familiar with ANOVA this feels similar to that, except that we impose a certain structure to these $\phi_i$s: $$
 \phi_i \mid \boldsymbol{\phi}_{-i} \sim \operatorname{N} \left(  \rho\sum_{j \sim i} w_{ij} \phi_j \ , \ \sigma^2 \right).
-$$
-Here $\rho$ is a parameter that controls the amount of spatial autocorrelation in the model, and $w_{ij}$ is assumed row-normalised.
-This means that these random effects $\phi$ must take into account the structure of the neighbourhoods of the areas when estimating these values.
-This is the Conditional Autoregressive (CAR) model, and it is a very popular model for areal data.
+$$ Here $\rho$ is a parameter that controls the amount of spatial autocorrelation in the model, and $w_{ij}$ is assumed row-normalised. This means that these random effects $\phi$ must take into account the structure of the neighbourhoods of the areas when estimating these values. This is the Conditional Autoregressive (CAR) model, and it is a very popular model for areal data.
 
 Let's take a peek at the `hsp_bn` data that we saw earlier.
 
@@ -852,30 +765,21 @@ Let's take a peek at the `hsp_bn` data that we saw earlier.
 glimpse(hsp_bn)
 ```
 
-::: {.callout-important}
+::: callout-important
 The `hsp_bn` data is an artificial data set that I produced for instructive purposes only. It should **NOT** be used for research purposes.
 :::
 
-Suppose we are interested in building a linear house price model for Brunei that predicts the price of a house based on the built up size, number of bedrooms,  number of bathrooms, and the size of the land it sits on.
-This will look like this:
-$$
+Suppose we are interested in building a linear house price model for Brunei that predicts the price of a house based on the built up size, number of bedrooms, number of bathrooms, and the size of the land it sits on. This will look like this: $$
 \texttt{price} = \alpha + \beta_1 \texttt{built\_up} + \beta_2 \texttt{beds} + \beta_3 \texttt{baths} + \beta_4 \texttt{land\_size} + \phi + \epsilon
-$$
-From the earlier plot (@fig-hsp-spatial), we saw that there a lot of gaps in the kampong areas, which create "islands" of areas disconnected from each other. 
-Ideally the areas are all interconnected in some way.
-One way to solve this is to work at the higher mukim level.
-However, since we have kampong-level data (multiple observations per mukim), we have two approaches:
+$$ From the earlier plot (@fig-hsp-spatial), we saw that there a lot of gaps in the kampong areas, which create "islands" of areas disconnected from each other. Ideally the areas are all interconnected in some way. One way to solve this is to work at the higher mukim level. However, since we have kampong-level data (multiple observations per mukim), we have two approaches:
 
-1) Aggregate the data upwards to the mukim-level. This involves summarising the data for each mukim based on the multiple kampong observations (e.g. using medians, means and modes).
+1)  Aggregate the data upwards to the mukim-level. This involves summarising the data for each mukim based on the multiple kampong observations (e.g. using medians, means and modes).
 
-2) Utilise the kampong-level data directly, incorporating the multilevel structure into the model.
+2)  Utilise the kampong-level data directly, incorporating the multilevel structure into the model.
 
-The first approach has the downside of reducing the number of observations to the number of mukims, which might not be ideal if you have very few mukims.
-We only have 37 observed mukims so in terms of sample size strength, this is not great.
-So, we will use the second approach.
+The first approach has the downside of reducing the number of observations to the number of mukims, which might not be ideal if you have very few mukims. We only have 37 observed mukims so in terms of sample size strength, this is not great. So, we will use the second approach.
 
-The first thing to do is to create the $W$ matrix required for the CAR model, which is deduced from the neighbourhood structure of the mukims.
-This can be obtained using the `spdep::poly2nb()` function, as shown below.
+The first thing to do is to create the $W$ matrix required for the CAR model, which is deduced from the neighbourhood structure of the mukims. This can be obtained using the `spdep::poly2nb()` function, as shown below.
 
 ```{r}
 dat_sp <-
@@ -896,9 +800,7 @@ ggplot() +
 
 ```
 
-This graph contains 2 subgraphs which are disjoint, because the none of the borders of the mukims in Temburong are found to be touching with any of the other mukims.
-This is an arbitrary decision, and we can manually change this if we wanted to.
-Maybe our reasoning is because the bridge is already built, we can consider Mukim Kota Batu and Mukim Bangar to be neighbours.
+This graph contains 2 subgraphs which are disjoint, because the none of the borders of the mukims in Temburong are found to be touching with any of the other mukims. This is an arbitrary decision, and we can manually change this if we wanted to. Maybe our reasoning is because the bridge is already built, we can consider Mukim Kota Batu and Mukim Bangar to be neighbours.
 
 ```{r}
 i <- which(attr(nb_mkm, "region.id") == "Mukim Kota Batu")
@@ -908,9 +810,7 @@ nb_mkm[[j]] <- c(nb_mkm[[j]], i)
 nb_mkm
 ```
 
-The CAR model requires the $W$ matrix, which is then obtained using the `spdep::nb2mat()` function.
-To estimate this model in R, we use the `{CARBayes}` package.
-This is done as follows:
+The CAR model requires the $W$ matrix, which is then obtained using the `spdep::nb2mat()` function. To estimate this model in R, we use the `{CARBayes}` package. This is done as follows:
 
 ```{r}
 #| output: false
@@ -929,10 +829,7 @@ mod1 <- CARBayes::S.CARmultilevel(
 mod1
 ```
 
-A note on scaling of the variables.
-We divide the `price` and `built_up` by 1000.
-This has the effect of rescaling the price to thousands of Brunei Dollars, and the effect of `built_up` is then measured per 1000 sqft.
-This is just to make the output more interpretable (and look nice), which we can do now.
+A note on scaling of the variables. We divide the `price` and `built_up` by 1000. This has the effect of rescaling the price to thousands of Brunei Dollars, and the effect of `built_up` is then measured per 1000 sqft. This is just to make the output more interpretable (and look nice), which we can do now.
 
 Let's take a look at the mukim-level estimates of the $\phi$ values.
 
@@ -961,20 +858,20 @@ mapview(
 
 Next steps
 
-- Usually want to compare against a model with no spatial effects, using e.g. `CARBayes::S.glm()`, and compare model fit (DIC, WAIC, predictive marginal log-likelihood). This gives (hopefully) justification as to why a spatial model is needed.
-- Model spatial effects at the kampong level perhaps?
-- Are the variables sufficient for the model? Maybe there are other interaction effects not sufficiently accounted for (e.g. house type? age/condition of property? neighbourhood characteristics? )
-
+-   Usually want to compare against a model with no spatial effects, using e.g. `CARBayes::S.glm()`, and compare model fit (DIC, WAIC, predictive marginal log-likelihood). This gives (hopefully) justification as to why a spatial model is needed.
+-   Model spatial effects at the kampong level perhaps?
+-   Are the variables sufficient for the model? Maybe there are other interaction effects not sufficiently accounted for (e.g. house type? age/condition of property? neighbourhood characteristics? )
 
 ## Summary
 
-1. Spatial data is data that has a spatial component to it, and can be represented as points, lines, polygons, or grids.
+1.  Spatial data is data that has a spatial component to it, and can be represented as points, lines, polygons, or grids.
 
-2. When your study variables are spatially dependent, or spatially heterogeneous, you must account for this in your analyses.
+2.  When your study variables are spatially dependent, or spatially heterogeneous, you must account for this in your analyses.
 
-3. Depending on the type of spatial data you, you can use different types of spatial models.
-  - For modelling point data, you can use something as simple as linear regression (with X,Y coordinates as input) or more complex models like kriging.
-  - For line data, the interest is usually in paths and distances.
-  - For areal data, you can use spatial autoregressive models (CAR or SAR), or spatially varying coefficient models (e.g. GWR).
-  
-4. R has a number of packages that can help you with spatial data analysis!
+3.  Depending on the type of spatial data you, you can use different types of spatial models.
+
+-   For modelling point data, you can use something as simple as linear regression (with X,Y coordinates as input) or more complex models like kriging.
+-   For line data, the interest is usually in paths and distances.
+-   For areal data, you can use spatial autoregressive models (CAR or SAR), or spatially varying coefficient models (e.g. GWR).
+
+4.  R has a number of packages that can help you with spatial data analysis!

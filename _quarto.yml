@@ -11,6 +11,8 @@ other-links:
 
 code-links:
   - repo
+  - text: R Script
+    href: https://raw.githubusercontent.com/bruneir/brm-spatial/main/br-spatial.R
 
 format: 
   html:

@@ -285,7 +285,7 @@ ggplot() +
 ## -----------------------------------------------------------------------------
 brd <- 
   read_sf("data/hotosm_brn_roads_lines_geojson/hotosm_brn_roads_lines_geojson.geojson") |>
-  sf::st_transform(4326)  # SET THE CRS!!! (WGS84)
+  st_transform(4326)  # SET THE CRS!!! (WGS84)
 glimpse(brd)
 
 

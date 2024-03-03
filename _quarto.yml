@@ -2,6 +2,8 @@ project:
   # title: Analysing spatial data using R
   type: website
   output-dir: _site
+  post-render: 
+    - extract_code.R
 
 other-links:
   - text: Brunei R website
@@ -12,7 +14,6 @@ code-links:
 
 format: 
   html:
-    page-layout: full
     code-fold: true
     code-tools: true
     code-link: true
@@ -37,3 +38,5 @@ knitr:
     out-width: 100%
  
 bibliography: ref.bib
+nocite: |
+  @*

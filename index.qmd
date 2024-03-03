@@ -99,25 +99,22 @@ install.packages("tidyverse")
 
 A bunch of things will happen on your screen that makes you look like a legit hacker.
 (It's normal! Unles... there are some errors in the installation process 😅)
-Once that's done, you will want to load the package to start using it.
-
-```{r}
-#| code-fold: false
-library(tidyverse)  # no need to use quotes
-```
-
+Once that's done, you will want to load the package using `library()` to start using it.
 Here's a list of packages we will be using today. 
 You'll need to install all of them before we begin. 
 In RStudio, there will be a prompt (yellow line at the top of the source pane) for you to install all these packages with a single click.
 
 ```{r}
 #| label: setup
-library(tidyverse)
-theme_set(theme_bw())  # set the theme
 library(kernlab)       # for GPR
 library(ggrepel)       # nice labels in plots
 library(osrm)          # OSM route calculator
 library(spdep)         # Moran's test and more
+library(CARBayes)      # spatial CAR models
+library(mapview)       # interactive plots
+library(scales)        # pretty formats
+library(tidyverse)
+theme_set(theme_bw())  # set the theme
 ```
 
 Furthermore, there are packages that are not yet on CRAN, but are available on GitHub. 
@@ -148,32 +145,36 @@ House closer to each other tend to exhibit more similar properties.
 ```{r}
 #| label: fig-hsp-spatial
 #| layout-ncol: 2
+#| fig-cap: Spatial distribution of house prices in Brunei
+#| fig-subcap:
+#|   - Original distribution
+#|   - Random shuffle
 load("data/artificial_hsp.RData")
 
-forest_col <- adjustcolor("forestgreen", alpha = 0.9)
+# forest_col <- adjustcolor("forestgreen", alpha = 0.9)
 forest_col <- "grey"
 
 plot_hsp <- function(x) {
-  ggplot(x) +
-  geom_sf(aes(fill = y, col = "")) +
-  geom_sf(col = "grey30", fill = NA) +
-  scale_fill_viridis_c(
-    labels = scales::dollar, 
-    name = "Predicted price", 
-    alpha = 0.9, 
-    na.value = forest_col
-  ) +
-  scale_colour_manual(values = NA) +              
-  guides(colour = guide_legend(
-    "Forest reserve", 
-    override.aes = list(fill = forest_col, colour = forest_col)
-  ))
+  left_join(kpg_sf, x, by = join_by(id, kampong, mukim)) |>
+    ggplot() +
+    geom_sf(aes(fill = price, col = "")) +
+    scale_fill_viridis_c(
+      labels = scales::dollar, 
+      name = "Predicted price", 
+      alpha = 0.9, 
+      na.value = forest_col
+    ) +
+    scale_colour_manual(values = "grey30") +              
+    guides(colour = guide_legend(
+      "No property\nsales", 
+      override.aes = list(fill = forest_col, colour = forest_col)
+    ))
 }
 
-p1 <- plot_hsp(hsp)
+p1 <- plot_hsp(hsp_bn)
 p2 <- 
-  hsp |> 
-  mutate(y = sample(y)) |> 
+  hsp_bn |> 
+  mutate(price = sample(price)) |> 
   plot_hsp()
 
 p1
@@ -200,11 +201,12 @@ The code is as follows.
 #| label: moran
 
 # Prepare neighbourhood strucuture
-nb <- poly2nb(hsp, queen = FALSE)
+hsp_sf <- left_join(kpg_sf, hsp_bn, by = join_by(id, kampong, mukim))
+nb <- poly2nb(hsp_sf, queen = FALSE)
 Wlist <- nb2listw(nb, zero.policy = TRUE, style = "B")
 
 # Moran's test
-moran.test(hsp$y, listw = Wlist, zero.policy = TRUE, na.action = na.omit)
+moran.test(hsp_sf$price, listw = Wlist, zero.policy = TRUE, na.action = na.omit)
 ```
 
 ### Types of GIS data
@@ -242,8 +244,6 @@ left_join(
     kampong, population, geometry
   ) |>
   slice_sample(n = 10)
-  
-
 ```
 
 Spatial data analysis must have these two components:
@@ -696,14 +696,53 @@ Improving the analysis
 -   Using a binned colour scale, e.g. `ggplot2::geom_scale_fill_viridis_b()`
 :::
 
+When your study data is made up a finite number of non-overlapping areas, then you can represent them as polygons in R.
+This is the case for the kampong and mukim data in Brunei.
+As an example, let us look at the population of each kampong in Brunei.
+This dataset comes from the 2021 Brunei Census data [@deps2022population]
+
+```{r}
+glimpse(bn_census2021)
+```
+
+Each row of the data refers to a kampong-level observation. 
+While there are unique identifiers to this (`id`, `kampong`, `mukim`, `district`), we would still need to geocode this data set so that we can do fun things like plot it on a map.
+Let's use (again) `left_join()` to do this.
+
 ```{r}
 bn_pop_sf <- 
   left_join(
     kpg_sf, 
     bn_census2021, 
-    by = join_by(id, kampong, mukim, district
-  ))
+    by = join_by(id, kampong, mukim, district)
+  )
+```
 
+Great. Let's take a look at the population column. It would be very interesting to see where most of the `r scales::comma(sum(bn_pop_sf$population, na.rm = TRUE))` people of Brunei live!
+
+```{r}
+ggplot(bn_pop_sf) +
+  geom_sf(aes(fill = population)) +
+  scale_fill_viridis_c(na.value = NA)
+```
+
+As expected, there are "hotspots" of population in the Brunei-Muara district, and to a lesser extent in the Belait district.
+We can make this graph a bit better by binning the population values.
+It seems to be dominated by a lot of these low value colours.
+Let's take a look at this further by inspecting a histogram.
+
+```{r}
+ggplot(bn_pop_sf) +
+  geom_histogram(aes(population), binwidth = 100)
+```
+
+So maybe we can bin the population into 4 categories: 
+< 100, 101-1000, 1001-10000, and 10000+.
+For this we directly use the `scale_fill_viridis_b()` and adjust the breaks. 
+Otherwise we would have to `cut()` the population column and then use `scale_fill_manual()`.
+We also added the names of the top 10 most populous kampongs to the map using `ggrepel::geom_label_repel()`.
+
+```{r}
 kpg_labels_sf <-
   bn_pop_sf |>
   arrange(desc(population)) |>
@@ -727,8 +766,157 @@ bn_pop_sf |>
     name = "Population",
     na.value = NA,
     labels = scales::comma,
-    breaks = c(0, 50, 100, 1000, 5000, 10000, 15000)
+    breaks = c(0, 100, 1000, 10000, 20000)
     # limits = c(0, 12000)
   ) +
   theme_bw()
 ```
+
+### Condtional Autoregressive (CAR) models
+
+One of the most interesting things about areal data is that you might want to find out how the value of a variable of interest is impacted simply by being in a certain area.
+A possible model could be
+$$
+y_i = \alpha + f(x_i) + \phi_i + \epsilon_i
+$$
+where $y_i$ is the value of the variable of interest in area $i$, $\alpha$ is the intercept, $f(x_i)$ is the covariate predictor, and $\phi_i$ represents the "offset" to the average value of $y_i$ due to the area $i$.
+If you're familiar with ANOVA this feels similar to that, except that we impose a certain structure to these $\phi_i$s:
+$$
+\phi_i \mid \boldsymbol{\phi}_{-i} \sim \operatorname{N} \left(  \rho\sum_{j \sim i} w_{ij} \phi_j \ , \ \sigma^2 \right).
+$$
+Here $\rho$ is a parameter that controls the amount of spatial autocorrelation in the model, and $w_{ij}$ is assumed row-normalised.
+This means that these random effects $\phi$ must take into account the structure of the neighbourhoods of the areas when estimating these values.
+This is the Conditional Autoregressive (CAR) model, and it is a very popular model for areal data.
+
+Let's take a peek at the `hsp_bn` data that we saw earlier.
+
+```{r}
+glimpse(hsp_bn)
+```
+
+::: {.callout-important}
+The `hsp_bn` data is an artificial data set that I produced for instructive purposes only. It should **NOT** be used for research purposes.
+:::
+
+Suppose we are interested in building a linear house price model for Brunei that predicts the price of a house based on the built up size, number of bedrooms,  number of bathrooms, and the size of the land it sits on.
+This will look like this:
+$$
+\texttt{price} = \alpha + \beta_1 \texttt{built\_up} + \beta_2 \texttt{beds} + \beta_3 \texttt{baths} + \beta_4 \texttt{land\_size} + \phi + \epsilon
+$$
+From the earlier plot (@fig-hsp-spatial), we saw that there a lot of gaps in the kampong areas, which create "islands" of areas disconnected from each other. 
+Ideally the areas are all interconnected in some way.
+One way to solve this is to work at the higher mukim level.
+However, since we have kampong-level data (multiple observations per mukim), we have two approaches:
+
+1) Aggregate the data upwards to the mukim-level. This involves summarising the data for each mukim based on the multiple kampong observations (e.g. using medians, means and modes).
+
+2) Utilise the kampong-level data directly, incorporating the multilevel structure into the model.
+
+The first approach has the downside of reducing the number of observations to the number of mukims, which might not be ideal if you have very few mukims.
+We only have 37 observed mukims so in terms of sample size strength, this is not great.
+So, we will use the second approach.
+
+The first thing to do is to create the $W$ matrix required for the CAR model, which is deduced from the neighbourhood structure of the mukims.
+This can be obtained using the `spdep::poly2nb()` function, as shown below.
+
+```{r}
+dat_sp <-
+  hsp_bn |>
+  group_by(mukim) |>
+  summarise(mukim = first(mukim)) |>
+  left_join(mkm_sf) |>
+  st_as_sf() |>
+  as("Spatial")
+nb_mkm <- poly2nb(dat_sp, row.names = dat_sp$mukim, queen = FALSE)
+
+# Plot
+nb_sf <- nb2lines(nb_mkm, coords = sp::coordinates(dat_sp), as_sf = TRUE)
+nb_sf <- st_set_crs(nb_sf, st_crs(dat_sp))
+ggplot() +
+  geom_sf(data = mkm_sf) +
+  geom_sf(data = nb_sf, col = "red3")
+
+```
+
+This graph contains 2 subgraphs which are disjoint, because the none of the borders of the mukims in Temburong are found to be touching with any of the other mukims.
+This is an arbitrary decision, and we can manually change this if we wanted to.
+Maybe our reasoning is because the bridge is already built, we can consider Mukim Kota Batu and Mukim Bangar to be neighbours.
+
+```{r}
+i <- which(attr(nb_mkm, "region.id") == "Mukim Kota Batu")
+j <- which(attr(nb_mkm, "region.id") == "Mukim Bangar")
+nb_mkm[[i]] <- c(nb_mkm[[i]], j)
+nb_mkm[[j]] <- c(nb_mkm[[j]], i)
+nb_mkm
+```
+
+The CAR model requires the $W$ matrix, which is then obtained using the `spdep::nb2mat()` function.
+To estimate this model in R, we use the `{CARBayes}` package.
+This is done as follows:
+
+```{r}
+#| output: false
+mod1 <- CARBayes::S.CARmultilevel(
+  formula = I(price/1000) ~ I(built_up/1000) + beds + baths + land_size,
+  data = hsp_bn,
+  family = "gaussian",
+  burnin = 1000,
+  n.sample = 2000,
+  ind.area = match(hsp_bn$mukim, dat_sp$mukim),
+  W = nb2mat(nb_mkm, style = "B")
+)
+```
+
+```{r}
+mod1
+```
+
+A note on scaling of the variables.
+We divide the `price` and `built_up` by 1000.
+This has the effect of rescaling the price to thousands of Brunei Dollars, and the effect of `built_up` is then measured per 1000 sqft.
+This is just to make the output more interpretable (and look nice), which we can do now.
+
+Let's take a look at the mukim-level estimates of the $\phi$ values.
+
+```{r}
+phi <- apply(mod1$samples$phi, 2, mean)
+names(phi) <- dat_sp$mukim
+head(phi)
+```
+
+And if we wanted to visualise this interactively, we can us the `{mapview}` package for this.
+
+```{r}
+hsp_mapview <-
+  left_join(mkm_sf, tibble(
+    mukim = names(phi),
+    phi = round(phi * 1000, -3)
+  ))
+mapview(
+  hsp_mapview,
+  zcol = "phi",
+  layer.name = "Spatial effects (BND)",
+  label = "mukim",
+  alpha.regions = 0.9
+)
+```
+
+Next steps
+
+- Usually want to compare against a model with no spatial effects, using e.g. `CARBayes::S.glm()`, and compare model fit (DIC, WAIC, predictive marginal log-likelihood). This gives (hopefully) justification as to why a spatial model is needed.
+- Model spatial effects at the kampong level perhaps?
+- Are the variables sufficient for the model? Maybe there are other interaction effects not sufficiently accounted for (e.g. house type? age/condition of property? neighbourhood characteristics? )
+
+
+## Summary
+
+1. Spatial data is data that has a spatial component to it, and can be represented as points, lines, polygons, or grids.
+
+2. When your study variables are spatially dependent, or spatially heterogeneous, you must account for this in your analyses.
+
+3. Depending on the type of spatial data you, you can use different types of spatial models.
+  - For modelling point data, you can use something as simple as linear regression (with X,Y coordinates as input) or more complex models like kriging.
+  - For line data, the interest is usually in paths and distances.
+  - For areal data, you can use spatial autoregressive models (CAR or SAR), or spatially varying coefficient models (e.g. GWR).
+  
+4. R has a number of packages that can help you with spatial data analysis!

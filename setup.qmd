@@ -27,7 +27,10 @@ Prior to attending the event, please ensure you have done the following.
      "kernlab", 
      "ggrepel", 
      "osrm", 
-     "remotes"
+     "remotes",
+     "CARBayes",
+     "mapview",
+     "scales"
    ))
    ```
 3. Install the `{bruneimap}` package by running the following code in the RStudio console.

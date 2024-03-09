@@ -1,7 +1,7 @@
 ---
 title: Analysing spatial data using R
 subtitle: Brunei R User Group Meetup 🇧🇳
-date: '9 March 2024'
+date: 9 March 2024
 author:
   - name: Haziq Jamil
     orcid: 0000-0003-3298-1010
@@ -85,6 +85,27 @@ for (i in seq_along(x)) {
 head(run_x)
 ```
 
+### Pipelines
+
+Suppose you have a sequence of functions that you want to apply onto an object. For instance, doing the following in R:
+
+> *Sample 100 observations from the N(0,1), then apply the exponential function, then apply the sine function, then take the mean*
+
+```{r}
+mean(sin(exp(rnorm(100))))
+```
+
+This is a bit difficult to read! In programming, pipelines allow us to put the output of a previous function into the argument of the first function of the preceding one. The pipe operator is '`|`' followed by a '`>`'. My font has ligatures, that's why it's showing up as those triangles!
+
+```{r}
+rnorm(100) |>  # Random samples
+  exp() |>     # exponential function
+  sin() |>     # sine function
+  mean()       # mean function
+```
+
+For us humans, it's much more readable so preferred when creating data science notebooks.
+
 ### List of packages
 
 The power of R comes from its diverse range of user-contributed packages. To install a package in R, we type `install.packages("package_name")`. As an example, try install the `{tidyverse}` package.
@@ -95,7 +116,7 @@ The power of R comes from its diverse range of user-contributed packages. To ins
 install.packages("tidyverse")
 ```
 
-A bunch of things will happen on your screen that makes you look like a legit hacker. (It's normal! Unles... there are some errors in the installation process 😅) Once that's done, you will want to load the package using `library()` to start using it. Here's a list of packages we will be using today. You'll need to install all of them before we begin. In RStudio, there will be a prompt (yellow line at the top of the source pane) for you to install all these packages with a single click.
+A bunch of things will happen on your screen that makes you look like a legit hacker. (It's normal! Unless... there are some errors in the installation process 😅) Once that's done, you will want to load the package using `library()` to start using it. Here's a list of packages we will be using today. You'll need to install all of them before we begin. In RStudio, there will be a prompt (yellow line at the top of the source pane) for you to install all these packages with a single click.
 
 ```{r}
 #| label: setup

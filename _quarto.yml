@@ -32,7 +32,7 @@ fontsize: 120%
 execute:
   freeze: auto
   warning: false
-  cache: true
+  # cache: true
 
 knitr: 
   opts_chunk:

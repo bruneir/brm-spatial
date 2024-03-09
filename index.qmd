@@ -61,7 +61,11 @@ For some, maybe it will be a bit fast-paced (sorry in advanced!). All the materi
 Also... ChatGPT is a great way to accelerate your learning!
 
 ::: {layout-ncol="2"}
-![](https://i.imgflip.com/840ojr.jpg) ![](https://miro.medium.com/v2/resize:fit:720/format:webp/1*dF8AoGe2VOMNbnxR-vgx0g.jpeg)
+
+![](https://i.imgflip.com/840ojr.jpg)
+
+![](https://miro.medium.com/v2/resize:fit:720/format:webp/1*dF8AoGe2VOMNbnxR-vgx0g.jpeg)
+
 :::
 
 I'm very happy to answer questions afterwards! 😀

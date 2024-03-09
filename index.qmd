@@ -210,7 +210,7 @@ To test this in R, we can use the `spdep::moran.test()` function from the `{spde
 
 # Prepare neighbourhood strucuture
 hsp_sf <- left_join(kpg_sf, hsp_bn, by = join_by(id, kampong, mukim))
-nb <- poly2nb(hsp_sf, queen = FALSE)
+nb <- poly2nb(hsp_sf, queen = FALSE, snap = 1)
 Wlist <- nb2listw(nb, zero.policy = TRUE, style = "B")
 
 # Moran's test

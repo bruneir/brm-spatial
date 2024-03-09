@@ -58,6 +58,12 @@ A basic understanding of R is assumed.
 
 For some, maybe it will be a bit fast-paced (sorry in advanced!). All the materials will be available online (see link on the right). Truthfully, I am not expecting you to walk away as an expert in spatial analysis, given the length of this talk. At the very least however I hope you become aware of the various spatial techniques and how they can be achieved in R.
 
+Also... ChatGPT is a great way to accelerate your learning!
+
+::: {layout-ncol="2"}
+![](https://i.imgflip.com/840ojr.jpg) ![](https://miro.medium.com/v2/resize:fit:720/format:webp/1*dF8AoGe2VOMNbnxR-vgx0g.jpeg)
+:::
+
 I'm very happy to answer questions afterwards! 😀
 
 ### Getting started with R
@@ -539,22 +545,6 @@ ggplot() +
 ::: callout-warning
 Garbage In Garbage Out! Modelling is as much an art as it is a science. Careful consideration needs to be made as to what is considered a predictor of a variable.
 :::
-
-<!-- ```{r} -->
-
-<!-- ggplot(kpg_sf) + -->
-
-<!--   geom_sf(aes(fill = mukim), col = "gray50") + -->
-
-<!--   geom_sf(data = mkm_sf, col = "black", lwd = 0.5, fill = NA) + -->
-
-<!--   geom_sf(data = filter(kpg_sf, is.na(mukim)), fill = "gray70", col = "gray70") + -->
-
-<!--   scale_fill_viridis_d(option = "turbo") + -->
-
-<!--   theme(legend.position = "none")  -->
-
-<!-- ``` -->
 
 ## Line data (`(MULTI)LINESTRING`)
 
